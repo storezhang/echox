@@ -67,6 +67,6 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (bool, error) {
 	if user, err := ec.User(); nil != err {
 		return false, err
 	} else {
-		return jcc.Enforcer.Enforce(user.Ids(), c.Request().URL.Path, MethodMapping[c.Request().Method])
+		return jcc.Enforcer.Enforce(user.IdString(), c.Request().URL.Path, MethodMapping[c.Request().Method])
 	}
 }
