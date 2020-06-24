@@ -49,7 +49,7 @@ type (
 		// - "header:<name>"
 		// - "query:<name>"
 		// - "cookie:<name>"
-		TokenLookup string
+		TokenLookup []string
 
 		// Token分隔字符串
 		// 非必须 默认值是"Bearer".
@@ -57,7 +57,7 @@ type (
 
 		keyFunc jwt.Keyfunc
 
-		Extractor jwtExtractor
+		extractor []jwtExtractor
 	}
 
 	// JWTSuccessHandler 成功后的处理
@@ -86,6 +86,16 @@ func (j *JWTConfig) Parse(t string) (claims jwt.Claims, header map[string]interf
 	return
 }
 
+func (j *JWTConfig) Extractor(c echo.Context) (token string, err error) {
+	for _, extractor := range j.extractor {
+		if token, err = extractor(c); nil == err || "" != token {
+			break
+		}
+	}
+
+	return
+}
+
 func (j *JWTConfig) Token(claims jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(j.SigningMethod), claims)
 
@@ -106,7 +116,7 @@ var (
 		Skipper:       middleware.DefaultSkipper,
 		SigningMethod: AlgorithmHS256,
 		ContextKey:    "user",
-		TokenLookup:   "header:" + echo.HeaderAuthorization,
+		TokenLookup:   []string{"header:" + echo.HeaderAuthorization, "query:token"},
 		AuthScheme:    "Bearer",
 		Claims:        &JWTClaims{},
 	}
@@ -137,7 +147,7 @@ func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
 	if config.Claims == nil {
 		config.Claims = DefaultJWTConfig.Claims
 	}
-	if config.TokenLookup == "" {
+	if 0 == len(config.TokenLookup) {
 		config.TokenLookup = DefaultJWTConfig.TokenLookup
 	}
 	if config.AuthScheme == "" {
@@ -150,13 +160,16 @@ func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
 		return []byte(config.SigningKey.(string)), nil
 	}
 
-	parts := strings.Split(config.TokenLookup, ":")
-	config.Extractor = jwtFromHeader(parts[1], config.AuthScheme)
-	switch parts[0] {
-	case "query":
-		config.Extractor = jwtFromQuery(parts[1])
-	case "cookie":
-		config.Extractor = jwtFromCookie(parts[1])
+	for _, tokenLookup := range config.TokenLookup {
+		parts := strings.Split(tokenLookup, ":")
+		switch parts[0] {
+		case "header":
+			config.extractor = append(config.extractor, jwtFromHeader(parts[1], config.AuthScheme))
+		case "query":
+			config.extractor = append(config.extractor, jwtFromQuery(parts[1]))
+		case "cookie":
+			config.extractor = append(config.extractor, jwtFromCookie(parts[1]))
+		}
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
