@@ -221,6 +221,7 @@ func jwtFromQuery(param string) jwtExtractor {
 		if token == "" {
 			return "", ErrJWTMissing
 		}
+
 		return token, nil
 	}
 }
