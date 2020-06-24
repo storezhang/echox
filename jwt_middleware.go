@@ -197,7 +197,7 @@ func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
 			}
 			return &echo.HTTPError{
 				Code:     http.StatusUnauthorized,
-				Message:  "invalid or expired jwt",
+				Message:  "JWT错误或者已经失效",
 				Internal: err,
 			}
 		}
@@ -211,6 +211,7 @@ func jwtFromHeader(header string, authScheme string) jwtExtractor {
 		if len(auth) > l+1 && auth[:l] == authScheme {
 			return auth[l+1:], nil
 		}
+
 		return "", ErrJWTMissing
 	}
 }
