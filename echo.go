@@ -3,6 +3,7 @@ package echox
 import (
 	"context"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/storezhang/validatorx"
 )
 
 const (
@@ -80,9 +81,8 @@ func StartWith(ec *EchoConfig) {
 
 	// 初始化Validator
 	if ec.Validate {
-		initValidate()
 		// 数据验证
-		e.Validator = &customValidator{validator: v}
+		e.Validator = validatorx.New()
 	}
 
 	// 初始化绑定
@@ -110,7 +110,7 @@ func StartWith(ec *EchoConfig) {
 				lang := c.Request().Header.Get(HeaderAcceptLanguage)
 				rsp.ErrorCode = 9901
 				rsp.Message = "数据验证错误"
-				rsp.Data = i18n(lang, re)
+				rsp.Data = validatorx.I18n(lang, re)
 			case Error:
 				rsp.ErrorCode = re.ErrorCode()
 				rsp.Message = re.Message()

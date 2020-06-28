@@ -46,6 +46,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/storezhang/gox v1.0.11 h1:kjTEhBXeCJ1g+eln7W7sF1oCWUxcCC7hl+zybRd0Y2A=
 github.com/storezhang/gox v1.0.11/go.mod h1:0bczK1LicvpkIDRazEojt2Vm+3cE8YCf172gvX/79h4=
+github.com/storezhang/validatorx v0.0.1 h1:PZFcgs/IOUMKmfY/NabypFxroOpXHlQO4HorD2YJH8U=
+github.com/storezhang/validatorx v0.0.1/go.mod h1:yZHKpxCcgG3II9ZP9b/L8EnEi+8nkYTqf5dIs5EnwC0=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
