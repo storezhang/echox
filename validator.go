@@ -30,7 +30,6 @@ func CheckMobile(mobile string) bool {
 
 // 自定义手机号验证函数
 func checkMobile(fl validator.FieldLevel) bool {
-
 	return CheckMobile(fl.Field().String())
 }
 
