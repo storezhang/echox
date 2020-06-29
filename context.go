@@ -171,7 +171,7 @@ func UpdateWithRelation(c echo.Context, bean interface{}, notCols ...string) (co
 		reqMap = make(map[string]interface{})
 	)
 
-	if err = updateInfo(c, bean, &reqMap); nil != err {
+	if err = UpdateMap(c, bean, &reqMap); nil != err {
 		return
 	}
 
@@ -189,11 +189,9 @@ func UpdateWithRelation(c echo.Context, bean interface{}, notCols ...string) (co
 }
 
 func UpdateInfo(c echo.Context, bean interface{}) (cols []string, err error) {
-	var (
-		reqMap = make(map[string]interface{})
-	)
+	var reqMap = make(map[string]interface{})
 
-	if err = updateInfo(c, bean, &reqMap); nil != err {
+	if err = UpdateMap(c, bean, &reqMap); nil != err {
 		return
 	}
 
@@ -205,7 +203,7 @@ func UpdateInfo(c echo.Context, bean interface{}) (cols []string, err error) {
 	return
 }
 
-func updateInfo(c echo.Context, bean, reqMap interface{}) (err error) {
+func UpdateMap(c echo.Context, bean, reqMap interface{}) (err error) {
 	var body []byte
 
 	if body, err = ioutil.ReadAll(c.Request().Body); nil != err {
