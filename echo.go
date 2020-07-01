@@ -3,7 +3,6 @@ package echox
 import (
 	"context"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/storezhang/validatorx"
@@ -120,7 +120,6 @@ func StartWith(ec *EchoConfig) {
 			}
 
 			c.JSON(statusCode, rsp)
-			c.Logger().Error(err)
 		}
 	}
 
@@ -130,7 +129,8 @@ func StartWith(ec *EchoConfig) {
 
 	// e.Use(middleware.CSRF())
 	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	// 打印堆栈信息，方便调试
+	e.Use(PanicStack())
 	e.Use(middleware.RequestID())
 
 	// 符合JWT和Casbin的上下文
