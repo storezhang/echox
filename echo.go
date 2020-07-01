@@ -129,7 +129,8 @@ func StartWith(ec *EchoConfig) {
 
 	// e.Use(middleware.CSRF())
 	e.Use(middleware.Logger())
-	// 打印堆栈信息，方便调试
+	// 打印堆栈信息
+	// 方便调试，默认处理没有换行，很难内眼查看堆栈信息
 	e.Use(PanicStack())
 	e.Use(middleware.RequestID())
 
