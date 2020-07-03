@@ -7,6 +7,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	`github.com/storezhang/gox`
 )
 
 type (
@@ -19,12 +20,15 @@ type (
 		JWT *JWTConfig
 		// 是否包含尾部斜杠
 		TrailingSlash bool
+		// URL前缀
+		UrlPrefix string
 	}
 )
 
 var (
 	DefaultJWTCasbinConfig = JWTCasbinConfig{
-		Skipper: middleware.DefaultSkipper,
+		Skipper:   middleware.DefaultSkipper,
+		UrlPrefix: "/api",
 	}
 
 	methodMapping = map[string]string{
@@ -49,6 +53,9 @@ func JWTCasbinWithConfig(config JWTCasbinConfig) echo.MiddlewareFunc {
 	if nil == config.Skipper {
 		config.Skipper = DefaultJWTCasbinConfig.Skipper
 	}
+	if "" == strings.TrimSpace(config.UrlPrefix) {
+		config.UrlPrefix = DefaultJWTCasbinConfig.UrlPrefix
+	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -67,22 +74,27 @@ func JWTCasbinWithConfig(config JWTCasbinConfig) echo.MiddlewareFunc {
 	}
 }
 
-func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (bool, error) {
-	ec := EchoContext{
-		Context: c,
-		JWT:     jcc.JWT,
-	}
+func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err error) {
+	var (
+		user gox.BaseUser
+		ec   = EchoContext{
+			Context: c,
+			JWT:     jcc.JWT,
+		}
+	)
 
 	path := c.Request().URL.Path
 	// 取得Path
 	// 统一加上最后的斜杠
-	if jcc.TrailingSlash && !strings.HasSuffix(path, "/") {
+	if jcc.TrailingSlash && 0 == strings.LastIndex(path[len(jcc.UrlPrefix):], "/") {
 		path += "/"
 	}
 
-	if user, err := ec.User(); nil != err {
-		return false, err
-	} else {
-		return jcc.Enforcer.Enforce(user.IdString(), path, methodMapping[c.Request().Method])
+	if user, err = ec.User(); nil != err {
+		return
 	}
+	// 调用Casbin检查权限
+	checked, err = jcc.Enforcer.Enforce(user.IdString(), path, methodMapping[c.Request().Method])
+
+	return
 }
