@@ -27,7 +27,7 @@ var (
 		Skipper: middleware.DefaultSkipper,
 	}
 
-	MethodMapping = map[string]string{
+	methodMapping = map[string]string{
 		"GET":    "r",
 		"POST":   "c",
 		"PUT":    "u",
@@ -83,6 +83,6 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (bool, error) {
 	if user, err := ec.User(); nil != err {
 		return false, err
 	} else {
-		return jcc.Enforcer.Enforce(user.IdString(), path, MethodMapping[c.Request().Method])
+		return jcc.Enforcer.Enforce(user.IdString(), path, methodMapping[c.Request().Method])
 	}
 }
