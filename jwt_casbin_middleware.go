@@ -1,10 +1,11 @@
 package echox
 
 import (
-	"github.com/storezhang/gox"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/storezhang/gox"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/labstack/echo/v4"
