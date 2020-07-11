@@ -1,13 +1,14 @@
 package echox
 
 import (
+	"github.com/storezhang/gox"
 	"net/http"
-	`strings`
+	"strconv"
+	"strings"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	`github.com/storezhang/gox`
 )
 
 type (
@@ -22,6 +23,12 @@ type (
 		TrailingSlash bool
 		// URL前缀
 		UrlPrefix string
+		// 用户角色权限
+		RoleSource RoleSource
+	}
+
+	RoleSource interface {
+		GetsUserRoleIds(int64) ([]int64, error)
 	}
 )
 
@@ -40,8 +47,8 @@ var (
 	}
 )
 
-func JWTCasbinMiddleware(e *casbin.Enforcer, jwt *JWTConfig, trailingSlash bool) echo.MiddlewareFunc {
-	c := DefaultJWTCasbinConfig
+func JWTCasbinMiddleware(jwtCasbinCfg JWTCasbinConfig, e *casbin.Enforcer, jwt *JWTConfig, trailingSlash bool) echo.MiddlewareFunc {
+	c := jwtCasbinCfg
 	c.Enforcer = e
 	c.JWT = jwt
 	c.TrailingSlash = trailingSlash
@@ -76,8 +83,9 @@ func JWTCasbinWithConfig(config JWTCasbinConfig) echo.MiddlewareFunc {
 
 func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err error) {
 	var (
-		user gox.BaseUser
-		ec   = EchoContext{
+		user    gox.BaseUser
+		roleIds []int64
+		ec      = EchoContext{
 			Context: c,
 			JWT:     jcc.JWT,
 		}
@@ -93,8 +101,19 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 	if user, err = ec.User(); nil != err {
 		return
 	}
-	// 调用Casbin检查权限
-	checked, err = jcc.Enforcer.Enforce(user.IdString(), path, methodMapping[c.Request().Method])
+
+	if roleIds, err = jcc.RoleSource.GetsUserRoleIds(user.Id); nil != err {
+		return
+	}
+	for _, roleId := range roleIds {
+		roleIdStr := strconv.FormatInt(roleId, 10)
+		// 调用Casbin检查权限
+		if checked, err = jcc.Enforcer.Enforce(roleIdStr, path, methodMapping[c.Request().Method]); nil != err {
+			return
+		} else if checked {
+			return
+		}
+	}
 
 	return
 }
