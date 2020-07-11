@@ -28,7 +28,7 @@ type (
 	}
 
 	RoleSource interface {
-		GetsUserRoleIds(int64) ([]int64, error)
+		GetsRoleIdsForUser(int64) ([]int64, error)
 	}
 )
 
@@ -102,7 +102,7 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 		return
 	}
 
-	if roleIds, err = jcc.RoleSource.GetsUserRoleIds(user.Id); nil != err {
+	if roleIds, err = jcc.RoleSource.GetsRoleIdsForUser(user.Id); nil != err {
 		return
 	}
 	for _, roleId := range roleIds {
