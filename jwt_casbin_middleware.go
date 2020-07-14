@@ -3,7 +3,6 @@ package echox
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/storezhang/gox"
 
@@ -22,8 +21,6 @@ type (
 		JWT *JWTConfig
 		// 是否包含尾部斜杠
 		TrailingSlash bool
-		// URL前缀
-		UrlPrefix string
 		// 用户角色权限
 		RoleSource RoleSource
 	}
@@ -35,8 +32,7 @@ type (
 
 var (
 	DefaultJWTCasbinConfig = JWTCasbinConfig{
-		Skipper:   middleware.DefaultSkipper,
-		UrlPrefix: "/api",
+		Skipper: middleware.DefaultSkipper,
 	}
 
 	methodMapping = map[string]string{
@@ -60,9 +56,6 @@ func JWTCasbinMiddleware(jwtCasbinCfg JWTCasbinConfig, e *casbin.Enforcer, jwt *
 func JWTCasbinWithConfig(config JWTCasbinConfig) echo.MiddlewareFunc {
 	if nil == config.Skipper {
 		config.Skipper = DefaultJWTCasbinConfig.Skipper
-	}
-	if "" == strings.TrimSpace(config.UrlPrefix) {
-		config.UrlPrefix = DefaultJWTCasbinConfig.UrlPrefix
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -92,13 +85,6 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 		}
 	)
 
-	path := c.Request().URL.Path
-	// 取得Path
-	// 统一加上最后的斜杠
-	if jcc.TrailingSlash && 0 == strings.LastIndex(path[len(jcc.UrlPrefix):], "/") {
-		path += "/"
-	}
-
 	if user, err = ec.User(); nil != err {
 		return
 	}
@@ -106,13 +92,36 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 	if roleIds, err = jcc.RoleSource.GetsRoleIdsForUser(user.Id); nil != err {
 		return
 	}
+
+	path := c.Request().URL.Path
+	if checked, err = jcc.checkPermission(path, methodMapping[c.Request().Method], roleIds...); nil != err {
+		return
+	}
+
+	// 取得Path
+	// 统一加上最后的斜杠
+	if !checked && jcc.TrailingSlash {
+		path += "/"
+		checked, err = jcc.checkPermission(path, methodMapping[c.Request().Method], roleIds...)
+	}
+
+	return
+}
+
+func (jcc *JWTCasbinConfig) checkPermission(
+	ojb string, act string,
+	roleIds ...int64,
+) (checked bool, err error) {
 	for _, roleId := range roleIds {
 		roleIdStr := strconv.FormatInt(roleId, 10)
 		// 调用Casbin检查权限
-		if checked, err = jcc.Enforcer.Enforce(roleIdStr, path, methodMapping[c.Request().Method]); nil != err {
-			return
-		} else if checked {
-			return
+		if checked, err = jcc.Enforcer.Enforce(roleIdStr, ojb, act); nil != err {
+			break
+		}
+
+		// 已经有权限，提前结束
+		if checked {
+			break
 		}
 	}
 
