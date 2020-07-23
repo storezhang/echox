@@ -118,7 +118,7 @@ var (
 		ContextKey:    "user",
 		TokenLookup:   []string{"header:" + echo.HeaderAuthorization, "query:token"},
 		AuthScheme:    "Bearer",
-		Claims:        &JWTClaims{},
+		Claims:        &UserClaims{},
 	}
 )
 
