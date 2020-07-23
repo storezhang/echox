@@ -108,9 +108,7 @@ const (
 
 var (
 	ErrJWTMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失JWT请求头")
-)
 
-var (
 	// DefaultJWTConfig 默认配置
 	DefaultJWTConfig = &JWTConfig{
 		Skipper:       middleware.DefaultSkipper,
