@@ -32,11 +32,11 @@ type (
 		SigningKey interface{}
 
 		// 签名方法
-		// 非必须 默认是HS256.
+		// 非必须 默认是HS256
 		SigningMethod string
 
 		// 存储用户信息的键
-		// 非必须 默认值是"user".
+		// 非必须 默认值是"user"
 		ContextKey string
 
 		// 存储数据的类型
@@ -44,7 +44,7 @@ type (
 		Claims jwt.Claims
 
 		// 定义从哪获得Token
-		// 非必须 默认值是"header:Authorization".
+		// 非必须 默认值是"header:Authorization"
 		// 可能的值：
 		// - "header:<name>"
 		// - "query:<name>"
@@ -52,7 +52,7 @@ type (
 		TokenLookup []string
 
 		// Token分隔字符串
-		// 非必须 默认值是"Bearer".
+		// 非必须 默认值是"Bearer"
 		AuthScheme string
 
 		keyFunc jwt.Keyfunc
@@ -108,9 +108,7 @@ const (
 
 var (
 	ErrJWTMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失JWT请求头")
-)
 
-var (
 	// DefaultJWTConfig 默认配置
 	DefaultJWTConfig = &JWTConfig{
 		Skipper:       middleware.DefaultSkipper,
@@ -118,7 +116,7 @@ var (
 		ContextKey:    "user",
 		TokenLookup:   []string{"header:" + echo.HeaderAuthorization, "query:token"},
 		AuthScheme:    "Bearer",
-		Claims:        &JWTClaims{},
+		Claims:        &UserClaims{},
 	}
 )
 

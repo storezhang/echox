@@ -22,10 +22,11 @@ type (
 	EchoContext struct {
 		echo.Context
 
+		// JWT配置
 		JWT *JWTConfig
 	}
 
-	JWTClaims struct {
+	UserClaims struct {
 		gox.BaseUser
 		jwt.StandardClaims
 	}
@@ -42,14 +43,14 @@ func (ec *EchoContext) User() (user gox.BaseUser, err error) {
 	if claims, _, err = ec.JWT.Parse(token); nil != err {
 		return
 	} else {
-		user = claims.(*JWTClaims).BaseUser
+		user = claims.(*UserClaims).BaseUser
 	}
 
 	return
 }
 
 func (ec *EchoContext) Token(code int, user gox.BaseUser) error {
-	if token, err := ec.JWT.Token(&JWTClaims{
+	if token, err := ec.JWT.Token(&UserClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
