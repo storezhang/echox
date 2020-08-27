@@ -13,6 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/storezhang/gox"
 	"github.com/storezhang/validatorx"
 )
 
@@ -111,10 +112,10 @@ func StartWith(ec *EchoConfig) {
 				rsp.ErrorCode = 9901
 				rsp.Message = "数据验证错误"
 				rsp.Data = validatorx.I18n(lang, re)
-			case Error:
-				rsp.ErrorCode = re.ErrorCode()
-				rsp.Message = re.Message()
-				rsp.Data = re.Data()
+			case *gox.CodeError:
+				rsp.ErrorCode = int(re.ToErrorCode())
+				rsp.Message = re.ToMsg()
+				rsp.Data = re.ToData()
 			default:
 				rsp.Message = re.Error()
 			}

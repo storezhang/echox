@@ -186,6 +186,10 @@ func UpdateWithRelation(c echo.Context, bean interface{}, notCols ...string) (co
 		}
 	}
 
+	if 0 == len(cols) && 0 == len(otherCols) {
+		err = ErrNoUpdateParam
+	}
+
 	return
 }
 
@@ -199,6 +203,10 @@ func UpdateInfo(c echo.Context, bean interface{}) (cols []string, err error) {
 	cols = make([]string, 0)
 	for key := range reqMap {
 		cols = append(cols, gox.UnderscoreName(key, false))
+	}
+
+	if 0 == len(cols) {
+		err = ErrNoUpdateParam
 	}
 
 	return

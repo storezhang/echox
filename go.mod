@@ -9,6 +9,6 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/mcuadros/go-defaults v1.2.0
-	github.com/storezhang/gox v1.0.19
+	github.com/storezhang/gox v1.1.2
 	github.com/storezhang/validatorx v0.0.3
 )
