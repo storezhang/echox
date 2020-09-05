@@ -44,10 +44,10 @@ github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWb
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/storezhang/gox v1.0.19 h1:AmEYfwAVI5klWA4z1wdepAQOE7yWk49WoUJmtqBrxBk=
-github.com/storezhang/gox v1.0.19/go.mod h1:W8HkitUlhS1+xdYLQiXrOehXuQLaBFASyxGeiLqyQvY=
-github.com/storezhang/validatorx v0.0.3 h1:IzP6aYskfUeDqZ2Oy1UuxMffHdQF/5wo8eqfNh/OXYI=
-github.com/storezhang/validatorx v0.0.3/go.mod h1:yZHKpxCcgG3II9ZP9b/L8EnEi+8nkYTqf5dIs5EnwC0=
+github.com/storezhang/gox v1.1.5 h1:ga8J9Rme4y++BOPdXuSJzCrvj2szEwqLnFULIWlZrLY=
+github.com/storezhang/gox v1.1.5/go.mod h1:W8HkitUlhS1+xdYLQiXrOehXuQLaBFASyxGeiLqyQvY=
+github.com/storezhang/validatorx v0.0.13 h1:r4bHl1c3llbo5GaRb4BtM8aqPrPV7FVphupEwSbIEJs=
+github.com/storezhang/validatorx v0.0.13/go.mod h1:bE+PpWFpn2hN//nzE3CwTYzz9VqAp8bUCMQ0A12YAOw=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
