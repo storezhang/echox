@@ -201,11 +201,13 @@ func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
 				if config.SuccessHandler != nil {
 					config.SuccessHandler(c)
 				}
+
 				return next(c)
 			}
 			if config.ErrorHandler != nil {
 				return config.ErrorHandler(err)
 			}
+
 			return &echo.HTTPError{
 				Code:     http.StatusUnauthorized,
 				Message:  "JWT错误或者已经失效",
