@@ -46,8 +46,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/storezhang/gox v1.1.5 h1:ga8J9Rme4y++BOPdXuSJzCrvj2szEwqLnFULIWlZrLY=
 github.com/storezhang/gox v1.1.5/go.mod h1:W8HkitUlhS1+xdYLQiXrOehXuQLaBFASyxGeiLqyQvY=
-github.com/storezhang/validatorx v0.0.13 h1:r4bHl1c3llbo5GaRb4BtM8aqPrPV7FVphupEwSbIEJs=
-github.com/storezhang/validatorx v0.0.13/go.mod h1:bE+PpWFpn2hN//nzE3CwTYzz9VqAp8bUCMQ0A12YAOw=
+github.com/storezhang/validatorx v0.0.14 h1:ComHciHZ3EoDWLx5PrS9ViGolGLrlK8GgG7wT7VDc/8=
+github.com/storezhang/validatorx v0.0.14/go.mod h1:bE+PpWFpn2hN//nzE3CwTYzz9VqAp8bUCMQ0A12YAOw=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=

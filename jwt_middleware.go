@@ -69,16 +69,16 @@ type (
 	jwtExtractor func(echo.Context) (string, error)
 )
 
-func (j *JWTConfig) Parse(t string) (claims jwt.Claims, header map[string]interface{}, err error) {
+func (jc *JWTConfig) Parse(t string) (claims jwt.Claims, header map[string]interface{}, err error) {
 	token := new(jwt.Token)
-	if _, ok := j.Claims.(jwt.MapClaims); ok {
-		token, err = jwt.Parse(t, j.keyFunc)
+	if _, ok := jc.Claims.(jwt.MapClaims); ok {
+		token, err = jwt.Parse(t, jc.keyFunc)
 	} else {
-		elem := reflect.ValueOf(j.Claims).Type().Elem()
+		elem := reflect.ValueOf(jc.Claims).Type().Elem()
 		claims := reflect.New(elem).Interface().(jwt.Claims)
-		token, err = jwt.ParseWithClaims(t, claims, j.keyFunc)
+		token, err = jwt.ParseWithClaims(t, claims, jc.keyFunc)
 	}
-	if err == nil && token.Valid {
+	if nil == err && token.Valid {
 		claims = token.Claims
 		header = token.Header
 	}
@@ -86,8 +86,8 @@ func (j *JWTConfig) Parse(t string) (claims jwt.Claims, header map[string]interf
 	return
 }
 
-func (j *JWTConfig) Extractor(c echo.Context) (token string, err error) {
-	for _, extractor := range j.extractor {
+func (jc *JWTConfig) Extractor(c echo.Context) (token string, err error) {
+	for _, extractor := range jc.extractor {
 		if token, err = extractor(c); nil == err || "" != token {
 			break
 		}
@@ -96,10 +96,10 @@ func (j *JWTConfig) Extractor(c echo.Context) (token string, err error) {
 	return
 }
 
-func (j *JWTConfig) Token(claims jwt.Claims) (string, error) {
-	token := jwt.NewWithClaims(jwt.GetSigningMethod(j.SigningMethod), claims)
+func (jc *JWTConfig) Token(claims jwt.Claims) (string, error) {
+	token := jwt.NewWithClaims(jwt.GetSigningMethod(jc.SigningMethod), claims)
 
-	return token.SignedString([]byte(j.SigningKey.(string)))
+	return token.SignedString([]byte(jc.SigningKey.(string)))
 }
 
 const (
