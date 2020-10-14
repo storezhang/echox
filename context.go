@@ -2,7 +2,6 @@ package echox
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -66,7 +65,9 @@ func (ec *EchoContext) Token(code int, user gox.BaseUser) error {
 }
 
 func (ec *EchoContext) HttpFile(file http.File) (err error) {
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	var fi os.FileInfo
 	fi, err = file.Stat()
@@ -80,15 +81,15 @@ func (ec *EchoContext) HttpFile(file http.File) (err error) {
 }
 
 func (ec *EchoContext) HttpAttachment(file http.File, name string) error {
-	return ec.contentDisposition(file, name, "asset")
+	return ec.contentDisposition(file, name, gox.ContentDispositionTypeAttachment)
 }
 
 func (ec *EchoContext) HttpInline(file http.File, name string) error {
-	return ec.contentDisposition(file, name, "inline")
+	return ec.contentDisposition(file, name, gox.ContentDispositionTypeInline)
 }
 
-func (ec *EchoContext) contentDisposition(file http.File, name, dispositionType string) error {
-	ec.Response().Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("%s; filename=%q", dispositionType, name))
+func (ec *EchoContext) contentDisposition(file http.File, name string, dispositionType gox.ContentDispositionType) error {
+	ec.Response().Header().Set(gox.HeaderContentDisposition, gox.ContentDisposition(name, dispositionType))
 
 	return ec.HttpFile(file)
 }
