@@ -2,15 +2,16 @@ package echox
 
 import (
 	`encoding/json`
-	"fmt"
-	"net/http"
-	"reflect"
-	"strings"
+	`fmt`
+	`net/http`
+	`reflect`
+	`strings`
 	`time`
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	`github.com/dgrijalva/jwt-go`
+	`github.com/labstack/echo/v4`
+	`github.com/labstack/echo/v4/middleware`
+	`github.com/rs/xid`
 	`github.com/storezhang/gox`
 )
 
@@ -130,13 +131,14 @@ func (jc *JWTConfig) Token(claims jwt.Claims) (string, error) {
 	return token.SignedString([]byte(jc.SigningKey.(string)))
 }
 
-func (jc *JWTConfig) UserToken(domain string, user gox.BaseUser, expire time.Duration) (token string, err error) {
+func (jc *JWTConfig) UserToken(domain string, user gox.BaseUser, expire time.Duration) (token string, id string, err error) {
 	// 序列化User对象为JSON
 	var userBytes []byte
 	if userBytes, err = json.Marshal(user); nil != err {
 		return
 	}
 
+	id = xid.New().String()
 	token, err = jc.Token(jwt.StandardClaims{
 		// 代表这个JWT的签发主体
 		Issuer: domain,
@@ -144,8 +146,14 @@ func (jc *JWTConfig) UserToken(domain string, user gox.BaseUser, expire time.Dur
 		Subject: string(userBytes),
 		// 代表这个JWT的接收对象
 		Audience: domain,
+		// 是一个时间戳，代表这个JWT的签发时间
+		IssuedAt: time.Now().Unix(),
+		// 是一个时间戳，代表这个JWT生效的开始时间，意味着在这个时间之前验证JWT是会失败的
+		NotBefore: time.Now().Unix(),
 		// 是一个时间戳，代表这个JWT的过期时间
 		ExpiresAt: time.Now().Add(expire).Unix(),
+		// 是JWT的唯一标识
+		Id: id,
 	})
 
 	return
