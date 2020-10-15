@@ -10,7 +10,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/rs/xid v1.2.1
-	github.com/storezhang/gox v1.2.4
+	github.com/storezhang/gox v1.2.5
 	github.com/storezhang/validatorx v0.0.14
 )
 
