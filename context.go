@@ -1,16 +1,16 @@
 package echox
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"time"
+	`encoding/json`
+	`io/ioutil`
+	`net/http`
+	`os`
+	`time`
 
-	"github.com/dgrijalva/jwt-go"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/labstack/echo/v4"
-	"github.com/storezhang/gox"
+	`github.com/dgrijalva/jwt-go`
+	`github.com/json-iterator/go`
+	`github.com/labstack/echo/v4`
+	`github.com/storezhang/gox`
 )
 
 const (
@@ -18,50 +18,56 @@ const (
 )
 
 type (
+	// EchoContext
 	EchoContext struct {
 		echo.Context
 
 		// JWT配置
 		JWT *JWTConfig
 	}
-
-	UserClaims struct {
-		gox.BaseUser
-		jwt.StandardClaims
-	}
 )
 
 func (ec *EchoContext) User() (user gox.BaseUser, err error) {
-	var token string
+	var (
+		token  string
+		claims jwt.Claims
+	)
 
 	if token, err = ec.JWT.Extractor(ec.Context); nil != err {
 		return
 	}
 
-	var claims jwt.Claims
 	if claims, _, err = ec.JWT.Parse(token); nil != err {
 		return
-	} else {
-		user = claims.(*UserClaims).BaseUser
 	}
+
+	// 从JWT Token中反序列化User
+	err = json.Unmarshal([]byte(claims.(*jwt.StandardClaims).Subject), &user)
 
 	return
 }
 
-func (ec *EchoContext) Token(code int, user gox.BaseUser) error {
-	if token, err := ec.JWT.Token(&UserClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-		},
-		BaseUser: user,
-	}); nil != err {
-		return err
-	} else {
-		return ec.Context.JSON(code, echo.Map{
-			"token": token,
-			"user":  user,
-		})
+func (ec *EchoContext) JWTToken(domain string, user gox.BaseUser) (token string, err error) {
+	// 序列化User对象为JSON
+	var userBytes []byte
+	if userBytes, err = json.Marshal(user); nil != err {
+		return
 	}
+
+	if token, err = ec.JWT.Token(jwt.StandardClaims{
+		// 代表这个JWT的签发主体
+		Issuer: domain,
+		// 代表这个JWT的主体，即它的所有人
+		Subject: string(userBytes),
+		// 代表这个JWT的接收对象
+		Audience: domain,
+		// 是一个时间戳，代表这个JWT的过期时间
+		ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+	}); nil != err {
+		return
+	}
+
+	return
 }
 
 func (ec *EchoContext) HttpFile(file http.File) (err error) {

@@ -11,6 +11,25 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+const (
+	// AlgorithmHS256 HS256加密算法
+	AlgorithmHS256 = "HS256"
+)
+
+var (
+	ErrJWTMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失JWT请求头")
+
+	// DefaultJWTConfig 默认配置
+	DefaultJWTConfig = &JWTConfig{
+		Skipper:       middleware.DefaultSkipper,
+		SigningMethod: AlgorithmHS256,
+		ContextKey:    "user",
+		TokenLookup:   []string{"header:" + echo.HeaderAuthorization, "query:token"},
+		AuthScheme:    "Bearer",
+		Claims:        &jwt.StandardClaims{},
+	}
+)
+
 type (
 	// JWTConfig JWT中间件的配置
 	JWTConfig struct {
@@ -101,24 +120,6 @@ func (jc *JWTConfig) Token(claims jwt.Claims) (string, error) {
 
 	return token.SignedString([]byte(jc.SigningKey.(string)))
 }
-
-const (
-	AlgorithmHS256 = "HS256"
-)
-
-var (
-	ErrJWTMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失JWT请求头")
-
-	// DefaultJWTConfig 默认配置
-	DefaultJWTConfig = &JWTConfig{
-		Skipper:       middleware.DefaultSkipper,
-		SigningMethod: AlgorithmHS256,
-		ContextKey:    "user",
-		TokenLookup:   []string{"header:" + echo.HeaderAuthorization, "query:token"},
-		AuthScheme:    "Bearer",
-		Claims:        &UserClaims{},
-	}
-)
 
 // JWT JWT中间件
 func JWT(key interface{}) echo.MiddlewareFunc {
