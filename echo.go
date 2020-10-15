@@ -17,10 +17,6 @@ import (
 	"github.com/storezhang/validatorx"
 )
 
-const (
-	HeaderAcceptLanguage = "Accept-Language"
-)
-
 var (
 	DefaultEchoConfig = &EchoConfig{
 		Ip:                 "",
@@ -51,15 +47,14 @@ type (
 	}
 )
 
-func (ec *EchoConfig) Address() string {
-	var address string
+func (ec *EchoConfig) Address() (address string) {
 	if "" != strings.TrimSpace(ec.Ip) {
 		address = fmt.Sprintf("%s:%d", ec.Ip, ec.Port)
 	} else {
 		address = fmt.Sprintf(":%d", ec.Port)
 	}
 
-	return address
+	return
 }
 
 func Start() {
@@ -108,7 +103,7 @@ func StartWith(ec *EchoConfig) {
 				rsp.Message = re.Error()
 			case validator.ValidationErrors:
 				statusCode = http.StatusBadRequest
-				lang := c.Request().Header.Get(HeaderAcceptLanguage)
+				lang := c.Request().Header.Get(gox.HeaderAcceptLanguage)
 				rsp.ErrorCode = 9901
 				rsp.Message = "数据验证错误"
 				rsp.Data = validatorx.I18n(lang, re)
@@ -141,7 +136,7 @@ func StartWith(ec *EchoConfig) {
 			return func(c echo.Context) error {
 				cc := &EchoContext{
 					Context: c,
-					JWT:     ec.JWT,
+					jwt:     ec.JWT,
 				}
 				return h(cc)
 			}

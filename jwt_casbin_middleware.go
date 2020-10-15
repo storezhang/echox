@@ -1,6 +1,7 @@
 package echox
 
 import (
+	`encoding/json`
 	"net/http"
 	"strconv"
 
@@ -12,20 +13,23 @@ import (
 )
 
 type (
+	// JWTCasbinConfig Casbin配置
 	JWTCasbinConfig struct {
-		// 确定是不是要走中间件
+		// Skipper 确定是不是要走中间件
 		Skipper middleware.Skipper
-		// Casbin的权限验证模块
+		// Enforcer Casbin的权限验证模块
 		Enforcer *casbin.Enforcer
-		// JWT的配置
+		// JWT JWT的配置
 		JWT *JWTConfig
-		// 是否包含尾部斜杠
+		// TrailingSlash 是否包含尾部斜杠
 		TrailingSlash bool
-		// 用户角色权限
+		// RoleSource 用户角色权限
 		RoleSource RoleSource
 	}
 
+	// RoleSource 获得用户的角色编号列表
 	RoleSource interface {
+		// GetsRoleIdsForUser 获得用户的角色编号列表
 		GetsRoleIdsForUser(int64) ([]int64, error)
 	}
 )
@@ -75,13 +79,19 @@ func JWTCasbinWithConfig(config JWTCasbinConfig) echo.MiddlewareFunc {
 	}
 }
 
+func (jcc JWTCasbinConfig) String() string {
+	jsonBytes, _ := json.MarshalIndent(jcc, "", "    ")
+
+	return string(jsonBytes)
+}
+
 func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err error) {
 	var (
 		user    gox.BaseUser
 		roleIds []int64
 		ec      = EchoContext{
 			Context: c,
-			JWT:     jcc.JWT,
+			jwt:     jcc.JWT,
 		}
 	)
 

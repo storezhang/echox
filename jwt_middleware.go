@@ -1,14 +1,17 @@
 package echox
 
 import (
+	`encoding/json`
 	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
+	`time`
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	`github.com/storezhang/gox`
 )
 
 const (
@@ -88,6 +91,12 @@ type (
 	jwtExtractor func(echo.Context) (string, error)
 )
 
+func (jc JWTConfig) String() string {
+	jsonBytes, _ := json.MarshalIndent(jc, "", "    ")
+
+	return string(jsonBytes)
+}
+
 func (jc *JWTConfig) Parse(t string) (claims jwt.Claims, header map[string]interface{}, err error) {
 	token := new(jwt.Token)
 	if _, ok := jc.Claims.(jwt.MapClaims); ok {
@@ -119,6 +128,27 @@ func (jc *JWTConfig) Token(claims jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(jc.SigningMethod), claims)
 
 	return token.SignedString([]byte(jc.SigningKey.(string)))
+}
+
+func (jc *JWTConfig) UserToken(domain string, user gox.BaseUser, expire time.Duration) (token string, err error) {
+	// 序列化User对象为JSON
+	var userBytes []byte
+	if userBytes, err = json.Marshal(user); nil != err {
+		return
+	}
+
+	token, err = jc.Token(jwt.StandardClaims{
+		// 代表这个JWT的签发主体
+		Issuer: domain,
+		// 代表这个JWT的主体，即它的所有人
+		Subject: string(userBytes),
+		// 代表这个JWT的接收对象
+		Audience: domain,
+		// 是一个时间戳，代表这个JWT的过期时间
+		ExpiresAt: time.Now().Add(expire).Unix(),
+	})
+
+	return
 }
 
 // JWT JWT中间件
