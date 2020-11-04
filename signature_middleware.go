@@ -101,7 +101,7 @@ type (
 	// KeySource 获得签名参数
 	KeySource interface {
 		// SecretKey 获得签名参数
-		SecretKey(id string) (secretKey string, err error)
+		Key(id string) (key string, err error)
 	}
 
 	// Algorithm 签名算法
@@ -141,7 +141,7 @@ func SignatureWithConfig(config SignatureConfig) echo.MiddlewareFunc {
 			}
 
 			appKey := verifier.KeyId()
-			if secretKey, err = config.KeySource.SecretKey(appKey); nil != err {
+			if secretKey, err = config.KeySource.Key(appKey); nil != err {
 				return
 			}
 
