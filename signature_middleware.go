@@ -94,14 +94,14 @@ type (
 		Skipper middleware.Skipper `json:"skipper"`
 		// Algorithm 签名算法
 		Algorithm Algorithm `json:"algorithm"`
-		// SecretKeySource 获得签名参数
-		SecretKeySource SecretKeySource `json:"secret_key_source"`
+		// KeySource 获得签名参数
+		KeySource KeySource `json:"key_source"`
 	}
 
-	// SecretKeySource 获得签名参数
-	SecretKeySource interface {
+	// KeySource 获得签名参数
+	KeySource interface {
 		// SecretKey 获得签名参数
-		SecretKey(appKey string) (secretKey string, err error)
+		SecretKey(id string) (secretKey string, err error)
 	}
 
 	// Algorithm 签名算法
@@ -141,7 +141,7 @@ func SignatureWithConfig(config SignatureConfig) echo.MiddlewareFunc {
 			}
 
 			appKey := verifier.KeyId()
-			if secretKey, err = config.SecretKeySource.SecretKey(appKey); nil != err {
+			if secretKey, err = config.KeySource.SecretKey(appKey); nil != err {
 				return
 			}
 
