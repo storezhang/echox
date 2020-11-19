@@ -109,13 +109,13 @@ func StartWith(ec *EchoConfig) {
 				rsp.Data = validatorx.I18n(lang, re)
 			case *gox.CodeError:
 				rsp.ErrorCode = int(re.ToErrorCode())
-				rsp.Message = re.ToMsg()
+				rsp.Message = re.ToMessage()
 				rsp.Data = re.ToData()
 			default:
 				rsp.Message = re.Error()
 			}
 
-			c.JSON(statusCode, rsp)
+			_ = c.JSON(statusCode, rsp)
 		}
 	}
 
