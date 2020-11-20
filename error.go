@@ -5,5 +5,6 @@ import (
 )
 
 var (
-	ErrNoUpdateParam = &gox.CodeError{ErrorCode: 100001, Msg: "未下发更新参数"}
+	// ErrNoUpdateParam 未下发更新参数
+	ErrNoUpdateParam = &gox.CodeError{ErrorCode: 100001, Message: "未下发更新参数"}
 )
