@@ -1,20 +1,20 @@
 package echox
 
 import (
-	"context"
-	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-	"strconv"
-	"strings"
-	"time"
+	`context`
+	`fmt`
+	`net/http`
+	`os`
+	`os/signal`
+	`strconv`
+	`strings`
+	`time`
 
-	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/storezhang/gox"
-	"github.com/storezhang/validatorx"
+	`github.com/go-playground/validator/v10`
+	`github.com/labstack/echo/v4`
+	`github.com/labstack/echo/v4/middleware`
+	`github.com/storezhang/gox`
+	`github.com/storezhang/validatorx`
 )
 
 var (
@@ -78,7 +78,7 @@ func StartWith(ec *EchoConfig) {
 	// 初始化Validator
 	if ec.Validate {
 		// 数据验证
-		e.Validator = validatorx.New()
+		e.Validator = validatorx.GetInstance()
 	}
 
 	// 初始化绑定

@@ -11,8 +11,8 @@ require (
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/rs/xid v1.2.1
-	github.com/storezhang/gox v1.2.25
-	github.com/storezhang/validatorx v0.0.14
+	github.com/storezhang/gox v1.2.32
+	github.com/storezhang/validatorx v1.0.2
 )
 
 // replace github.com/storezhang/validatorx => ../../storezhang/validatorx
