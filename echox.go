@@ -100,7 +100,9 @@ func StartWith(ec *EchoConfig) {
 			switch re := err.(type) {
 			case *echo.HTTPError:
 				statusCode = re.Code
-				rsp.Message = re.Error()
+				rsp.ErrorCode = 9902
+				rsp.Message = "处理请求失败"
+				rsp.Data = re.Internal.Error()
 			case validator.ValidationErrors:
 				statusCode = http.StatusBadRequest
 				lang := c.Request().Header.Get(gox.HeaderAcceptLanguage)
@@ -112,7 +114,8 @@ func StartWith(ec *EchoConfig) {
 				rsp.Message = re.ToMessage()
 				rsp.Data = re.ToData()
 			default:
-				rsp.Message = re.Error()
+				rsp.ErrorCode = 9903
+				rsp.Message = "服务器内部错误"
 			}
 
 			_ = c.JSON(statusCode, rsp)
