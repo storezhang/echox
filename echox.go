@@ -102,7 +102,9 @@ func StartWith(ec *EchoConfig) {
 				statusCode = re.Code
 				rsp.ErrorCode = 9902
 				rsp.Message = "处理请求失败"
-				rsp.Data = re.Internal.Error()
+				if nil != re.Internal {
+					rsp.Data = re.Internal.Error()
+				}
 			case validator.ValidationErrors:
 				statusCode = http.StatusBadRequest
 				lang := c.Request().Header.Get(gox.HeaderAcceptLanguage)
