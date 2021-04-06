@@ -8,10 +8,10 @@ require (
 	github.com/go-fed/httpsig v1.0.0
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/json-iterator/go v1.1.10
-	github.com/labstack/echo/v4 v4.1.16
+	github.com/labstack/echo/v4 v4.2.1
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/rs/xid v1.2.1
-	github.com/storezhang/gox v1.2.32
+	github.com/storezhang/gox v1.3.6
 	github.com/storezhang/validatorx v1.0.2
 )
 

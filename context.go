@@ -2,7 +2,6 @@ package echox
 
 import (
 	`encoding/json`
-	`io/ioutil`
 	`net/http`
 	`os`
 	`time`
@@ -138,7 +137,7 @@ func (ec *EchoContext) jsonPBlob(code int, callback string, i interface{}) (err 
 
 func (ec *EchoContext) json(code int, i interface{}, indent string) error {
 	enc := jsoniter.NewEncoder(ec.Response())
-	if indent != "" {
+	if "" != indent {
 		enc.SetIndent("", indent)
 	}
 	ec.writeContentType(echo.MIMEApplicationJSONCharsetUTF8)
@@ -152,66 +151,4 @@ func (ec *EchoContext) writeContentType(value string) {
 	if "" == header.Get(echo.HeaderContentType) {
 		header.Set(echo.HeaderContentType, value)
 	}
-}
-
-// 获取有关联表的更新信息
-func UpdateWithRelation(c echo.Context, bean interface{}, notCols ...string) (cols, otherCols []string, err error) {
-	var (
-		reqMap = make(map[string]interface{})
-	)
-
-	if err = UpdateMap(c, bean, &reqMap); nil != err {
-		return
-	}
-
-	cols = make([]string, 0)
-	otherCols = make([]string, 0)
-	for key := range reqMap {
-		if exists, _ := gox.IsInArray(key, notCols); exists {
-			otherCols = append(otherCols, gox.UnderscoreName(key, false))
-		} else {
-			cols = append(cols, gox.UnderscoreName(key, false))
-		}
-	}
-
-	if 0 == len(cols) && 0 == len(otherCols) {
-		err = ErrNoUpdateParam
-	}
-
-	return
-}
-
-func UpdateInfo(c echo.Context, bean interface{}) (cols []string, err error) {
-	var reqMap = make(map[string]interface{})
-
-	if err = UpdateMap(c, bean, &reqMap); nil != err {
-		return
-	}
-
-	cols = make([]string, 0)
-	for key := range reqMap {
-		cols = append(cols, gox.UnderscoreName(key, false))
-	}
-
-	if 0 == len(cols) {
-		err = ErrNoUpdateParam
-	}
-
-	return
-}
-
-func UpdateMap(c echo.Context, bean, reqMap interface{}) (err error) {
-	var body []byte
-
-	if body, err = ioutil.ReadAll(c.Request().Body); nil != err {
-		return
-	}
-	if err = json.Unmarshal(body, bean); nil != err {
-		return
-	}
-	if err = json.Unmarshal(body, &reqMap); nil != err {
-		return
-	}
-
-	return
 }

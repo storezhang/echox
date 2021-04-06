@@ -12,7 +12,6 @@ import (
 	`github.com/labstack/echo/v4`
 	`github.com/labstack/echo/v4/middleware`
 	`github.com/rs/xid`
-	`github.com/storezhang/gox`
 )
 
 const (
@@ -133,15 +132,12 @@ func (jc *JWTConfig) Token(claims jwt.Claims) (string, error) {
 
 func (jc *JWTConfig) UserToken(
 	domain string,
-	user gox.BaseUser,
+	data interface{},
 	expire time.Duration,
 ) (token string, id string, err error) {
 	// 序列化User对象为JSON
 	var userBytes []byte
-	// 去掉额外不需要的字段
-	user.UpdatedAt = gox.ZeroTimestamp()
-	user.CreatedAt = gox.ZeroTimestamp()
-	if userBytes, err = json.Marshal(user); nil != err {
+	if userBytes, err = json.Marshal(data); nil != err {
 		return
 	}
 
