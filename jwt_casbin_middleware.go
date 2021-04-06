@@ -29,8 +29,8 @@ type (
 
 	// RoleSource 获得用户的角色编号列表
 	RoleSource interface {
-		// GetsRoleIdsForUser 获得用户的角色编号列表
-		GetsRoleIdsForUser(int64) ([]int64, error)
+		// GetsRoleIds 获得用户的角色编号列表
+		GetsRoleId(user interface{}) ([]int64, error)
 	}
 )
 
@@ -95,11 +95,11 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 		}
 	)
 
-	if user, err = ec.User(); nil != err {
+	if err = ec.Subject(user); nil != err {
 		return
 	}
 
-	if roleIds, err = jcc.RoleSource.GetsRoleIdsForUser(user.Id); nil != err {
+	if roleIds, err = jcc.RoleSource.GetsRoleId(user.Id); nil != err {
 		return
 	}
 

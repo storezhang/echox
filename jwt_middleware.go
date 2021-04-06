@@ -132,12 +132,12 @@ func (jc *JWTConfig) MakeToken(claims jwt.Claims) (string, error) {
 
 func (jc *JWTConfig) Token(
 	domain string,
-	data interface{},
+	subject interface{},
 	expire time.Duration,
 ) (token string, id string, err error) {
 	// 序列化User对象为JSON
-	var userBytes []byte
-	if userBytes, err = json.Marshal(data); nil != err {
+	var subjectBytes []byte
+	if subjectBytes, err = json.Marshal(subject); nil != err {
 		return
 	}
 
@@ -146,7 +146,7 @@ func (jc *JWTConfig) Token(
 		// 代表这个JWT的签发主体
 		Issuer: domain,
 		// 代表这个JWT的主体，即它的所有人
-		Subject: string(userBytes),
+		Subject: string(subjectBytes),
 		// 代表这个JWT的接收对象
 		Audience: domain,
 		// 是一个时间戳，代表这个JWT的签发时间

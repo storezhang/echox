@@ -26,7 +26,7 @@ type (
 	}
 )
 
-func (ec *EchoContext) User() (user gox.BaseUser, err error) {
+func (ec *EchoContext) Subject(subject interface{}) (err error) {
 	var (
 		token  string
 		claims jwt.Claims
@@ -40,8 +40,8 @@ func (ec *EchoContext) User() (user gox.BaseUser, err error) {
 		return
 	}
 
-	// 从JWT Token中反序列化User
-	err = json.Unmarshal([]byte(claims.(*jwt.StandardClaims).Subject), &user)
+	// 从Token中反序列化主题数据
+	err = json.Unmarshal([]byte(claims.(*jwt.StandardClaims).Subject), &subject)
 
 	return
 }
