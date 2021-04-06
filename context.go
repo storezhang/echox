@@ -17,7 +17,7 @@ const (
 )
 
 type (
-	// EchoContext
+	// EchoContext 自定义的Echo上下文
 	EchoContext struct {
 		echo.Context
 
@@ -25,6 +25,13 @@ type (
 		jwt *JWTConfig
 	}
 )
+
+func NewContext(c echo.Context, jwt *JWTConfig) *EchoContext {
+	return &EchoContext{
+		Context: c,
+		jwt:     jwt,
+	}
+}
 
 func (ec *EchoContext) Subject(subject interface{}) (err error) {
 	var (

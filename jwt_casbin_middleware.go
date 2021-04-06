@@ -89,10 +89,7 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 	var (
 		user    gox.BaseUser
 		roleIds []int64
-		ec      = EchoContext{
-			Context: c,
-			jwt:     jcc.JWT,
-		}
+		ec      = NewContext(c, jcc.JWT)
 	)
 
 	if err = ec.Subject(user); nil != err {

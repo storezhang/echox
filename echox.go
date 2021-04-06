@@ -139,11 +139,7 @@ func StartWith(ec *EchoConfig) {
 	if nil != ec.JWT {
 		e.Use(func(h echo.HandlerFunc) echo.HandlerFunc {
 			return func(c echo.Context) error {
-				cc := &EchoContext{
-					Context: c,
-					jwt:     ec.JWT,
-				}
-				return h(cc)
+				return h(NewContext(c, ec.JWT))
 			}
 		})
 	}
