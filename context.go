@@ -46,8 +46,8 @@ func (ec *EchoContext) User() (user gox.BaseUser, err error) {
 	return
 }
 
-func (ec *EchoContext) JWTToken(domain string, user gox.BaseUser, expire time.Duration) (token string, id string, err error) {
-	return ec.jwt.Token(domain, user, expire)
+func (ec *EchoContext) JWTToken(domain string, data interface{}, expire time.Duration) (token string, id string, err error) {
+	return ec.jwt.Token(domain, data, expire)
 }
 
 func (ec *EchoContext) HttpFile(file http.File) (err error) {
