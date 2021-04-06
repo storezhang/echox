@@ -118,11 +118,11 @@ func (jcc *JWTCasbinConfig) CheckPermission(c echo.Context) (checked bool, err e
 	return
 }
 
-func (jcc *JWTCasbinConfig) checkPermission(ojb string, act string, roleIds ...int64) (checked bool, err error) {
+func (jcc *JWTCasbinConfig) checkPermission(obj string, act string, roleIds ...int64) (checked bool, err error) {
 	for _, roleId := range roleIds {
 		roleIdStr := strconv.FormatInt(roleId, 10)
 		// 调用Casbin检查权限
-		if checked, err = jcc.Enforcer.Enforce(roleIdStr, ojb, act); nil != err {
+		if checked, err = jcc.Enforcer.Enforce(roleIdStr, obj, act); nil != err {
 			break
 		}
 
