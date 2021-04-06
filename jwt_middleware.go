@@ -124,13 +124,13 @@ func (jc *JWTConfig) Extractor(c echo.Context) (token string, err error) {
 	return
 }
 
-func (jc *JWTConfig) Token(claims jwt.Claims) (string, error) {
+func (jc *JWTConfig) MakeToken(claims jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(jc.SigningMethod), claims)
 
 	return token.SignedString([]byte(jc.SigningKey.(string)))
 }
 
-func (jc *JWTConfig) UserToken(
+func (jc *JWTConfig) Token(
 	domain string,
 	data interface{},
 	expire time.Duration,
@@ -142,7 +142,7 @@ func (jc *JWTConfig) UserToken(
 	}
 
 	id = xid.New().String()
-	token, err = jc.Token(jwt.StandardClaims{
+	token, err = jc.MakeToken(jwt.StandardClaims{
 		// 代表这个JWT的签发主体
 		Issuer: domain,
 		// 代表这个JWT的主体，即它的所有人
