@@ -118,6 +118,7 @@ func StartWith(ec *EchoConfig) {
 			default:
 				rsp.ErrorCode = 9903
 				rsp.Message = "服务器内部错误"
+				rsp.Data = err.Error()
 			}
 
 			_ = c.JSON(statusCode, rsp)
