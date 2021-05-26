@@ -4,9 +4,10 @@ import (
 	`github.com/labstack/echo/v4`
 )
 
-type middlewareFunc func(handlerFunc) handlerFunc
+// MiddlewareFunc 中间件
+type MiddlewareFunc func(handlerFunc) handlerFunc
 
-func parseMiddlewares(middlewares ...middlewareFunc) (ems []echo.MiddlewareFunc) {
+func parseMiddlewares(middlewares ...MiddlewareFunc) (ems []echo.MiddlewareFunc) {
 	length := len(middlewares)
 	if 0 == length {
 		return
