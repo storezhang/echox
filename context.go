@@ -12,149 +12,135 @@ import (
 	`github.com/storezhang/gox`
 )
 
-const (
-	defaultIndent = "  "
-)
+const defaultIndent = "  "
 
-type (
-	// EchoContext 自定义的Echo上下文
-	EchoContext struct {
-		echo.Context
+// Context 自定义的Echo上下文
+type Context struct {
+	echo.Context
 
-		// JWT配置
-		jwt *JWTConfig
-	}
-)
-
-func NewContext(c echo.Context, jwt *JWTConfig) *EchoContext {
-	return &EchoContext{
-		Context: c,
-		jwt:     jwt,
-	}
+	// Jwt配置
+	jwt JwtConfig
 }
 
-func (ec *EchoContext) Subject(subject interface{}) (err error) {
+func (c *Context) Subject(subject interface{}) (err error) {
 	var (
 		token  string
 		claims jwt.Claims
 	)
 
-	if token, err = ec.jwt.Extractor(ec.Context); nil != err {
+	if token, err = c.jwt.runExtractor(c.Context); nil != err {
 		return
 	}
-
-	if claims, _, err = ec.jwt.Parse(token); nil != err {
+	if claims, _, err = c.jwt.Parse(token); nil != err {
 		return
 	}
-
 	// 从Token中反序列化主题数据
 	err = json.Unmarshal([]byte(claims.(*jwt.StandardClaims).Subject), &subject)
 
 	return
 }
 
-func (ec *EchoContext) JWTToken(domain string, data interface{}, expire time.Duration) (token string, id string, err error) {
-	return ec.jwt.Token(domain, data, expire)
+func (c *Context) JwtToken(domain string, data interface{}, expire time.Duration) (token string, id string, err error) {
+	return c.jwt.Token(domain, data, expire)
 }
 
-func (ec *EchoContext) HttpFile(file http.File) (err error) {
+func (c *Context) HttpFile(file http.File) (err error) {
 	defer func() {
 		_ = file.Close()
 	}()
 
-	var fi os.FileInfo
-	fi, err = file.Stat()
-	if nil != err {
+	var info os.FileInfo
+	if info, err = file.Stat(); nil != err {
 		return
 	}
 
-	http.ServeContent(ec.Response(), ec.Request(), fi.Name(), fi.ModTime(), file)
+	http.ServeContent(c.Response(), c.Request(), info.Name(), info.ModTime(), file)
 
 	return
 }
 
-func (ec *EchoContext) HttpAttachment(file http.File, name string) error {
-	return ec.contentDisposition(file, name, gox.ContentDispositionTypeAttachment)
+func (c *Context) HttpAttachment(file http.File, name string) error {
+	return c.contentDisposition(file, name, gox.ContentDispositionTypeAttachment)
 }
 
-func (ec *EchoContext) HttpInline(file http.File, name string) error {
-	return ec.contentDisposition(file, name, gox.ContentDispositionTypeInline)
+func (c *Context) HttpInline(file http.File, name string) error {
+	return c.contentDisposition(file, name, gox.ContentDispositionTypeInline)
 }
 
-func (ec *EchoContext) contentDisposition(file http.File, name string, dispositionType gox.ContentDispositionType) error {
-	ec.Response().Header().Set(gox.HeaderContentDisposition, gox.ContentDisposition(name, dispositionType))
+func (c *Context) contentDisposition(file http.File, name string, dispositionType gox.ContentDispositionType) error {
+	c.Response().Header().Set(gox.HeaderContentDisposition, gox.ContentDisposition(name, dispositionType))
 
-	return ec.HttpFile(file)
+	return c.HttpFile(file)
 }
 
-func (ec *EchoContext) JSON(code int, i interface{}) (err error) {
+func (c *Context) JSON(code int, i interface{}) (err error) {
 	indent := ""
-	if _, pretty := ec.QueryParams()["pretty"]; ec.Echo().Debug || pretty {
+	if _, pretty := c.QueryParams()["pretty"]; c.Echo().Debug || pretty {
 		indent = defaultIndent
 	}
-	return ec.json(code, i, indent)
+	return c.json(code, i, indent)
 }
 
-func (ec *EchoContext) JSONPretty(code int, i interface{}, indent string) (err error) {
-	return ec.json(code, i, indent)
+func (c *Context) JSONPretty(code int, i interface{}, indent string) (err error) {
+	return c.json(code, i, indent)
 }
 
-func (ec *EchoContext) JSONBlob(code int, b []byte) (err error) {
-	return ec.Blob(code, echo.MIMEApplicationJSONCharsetUTF8, b)
+func (c *Context) JSONBlob(code int, b []byte) (err error) {
+	return c.Blob(code, echo.MIMEApplicationJSONCharsetUTF8, b)
 }
 
-func (ec *EchoContext) JSONP(code int, callback string, i interface{}) (err error) {
-	return ec.jsonPBlob(code, callback, i)
+func (c *Context) JSONP(code int, callback string, i interface{}) (err error) {
+	return c.jsonPBlob(code, callback, i)
 }
 
-func (ec *EchoContext) JSONPBlob(code int, callback string, b []byte) (err error) {
-	ec.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
-	ec.Response().WriteHeader(code)
-	if _, err = ec.Response().Write([]byte(callback + "(")); err != nil {
+func (c *Context) JSONPBlob(code int, callback string, b []byte) (err error) {
+	c.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
+	c.Response().WriteHeader(code)
+	if _, err = c.Response().Write([]byte(callback + "(")); err != nil {
 		return
 	}
-	if _, err = ec.Response().Write(b); err != nil {
+	if _, err = c.Response().Write(b); err != nil {
 		return
 	}
-	_, err = ec.Response().Write([]byte(");"))
+	_, err = c.Response().Write([]byte(");"))
 
 	return
 }
 
-func (ec *EchoContext) jsonPBlob(code int, callback string, i interface{}) (err error) {
-	enc := jsoniter.NewEncoder(ec.Response())
-	_, pretty := ec.QueryParams()["pretty"]
-	if ec.Echo().Debug || pretty {
+func (c *Context) jsonPBlob(code int, callback string, i interface{}) (err error) {
+	enc := jsoniter.NewEncoder(c.Response())
+	_, pretty := c.QueryParams()["pretty"]
+	if c.Echo().Debug || pretty {
 		enc.SetIndent("", "  ")
 	}
-	ec.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
-	ec.Response().WriteHeader(code)
-	if _, err = ec.Response().Write([]byte(callback + "(")); err != nil {
+	c.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
+	c.Response().WriteHeader(code)
+	if _, err = c.Response().Write([]byte(callback + "(")); err != nil {
 		return
 	}
 	if err = enc.Encode(i); err != nil {
 		return
 	}
-	if _, err = ec.Response().Write([]byte(");")); err != nil {
+	if _, err = c.Response().Write([]byte(");")); err != nil {
 		return
 	}
 
 	return
 }
 
-func (ec *EchoContext) json(code int, i interface{}, indent string) error {
-	enc := jsoniter.NewEncoder(ec.Response())
+func (c *Context) json(code int, i interface{}, indent string) error {
+	enc := jsoniter.NewEncoder(c.Response())
 	if "" != indent {
 		enc.SetIndent("", indent)
 	}
-	ec.writeContentType(echo.MIMEApplicationJSONCharsetUTF8)
-	ec.Response().WriteHeader(code)
+	c.writeContentType(echo.MIMEApplicationJSONCharsetUTF8)
+	c.Response().WriteHeader(code)
 
 	return enc.Encode(i)
 }
 
-func (ec *EchoContext) writeContentType(value string) {
-	header := ec.Response().Header()
+func (c *Context) writeContentType(value string) {
+	header := c.Response().Header()
 	if "" == header.Get(echo.HeaderContentType) {
 		header.Set(echo.HeaderContentType, value)
 	}

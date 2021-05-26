@@ -5,13 +5,14 @@ import (
 	"github.com/mcuadros/go-defaults"
 )
 
-type DefaultValueBinder struct{}
+type binder struct{}
 
-func (dvb *DefaultValueBinder) Bind(i interface{}, c echo.Context) (err error) {
-	defaults.SetDefaults(i)
+func (b *binder) Bind(data interface{}, ctx echo.Context) (err error) {
+	// 处理默认值
+	defaults.SetDefaults(data)
 
 	db := new(echo.DefaultBinder)
-	if err = db.Bind(i, c); err != echo.ErrUnsupportedMediaType {
+	if err = db.Bind(data, ctx); err != echo.ErrUnsupportedMediaType {
 		return
 	}
 
