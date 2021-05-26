@@ -15,7 +15,7 @@ func (g *Group) Use(middlewares ...MiddlewareFunc) {
 	g.group.Use(parseMiddlewares(middlewares...)...)
 }
 
-func (g *Group) CONNECT(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Connect(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodConnect, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -23,7 +23,7 @@ func (g *Group) CONNECT(path string, handler handlerFunc, middlewares ...Middlew
 	}
 }
 
-func (g *Group) DELETE(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Delete(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodDelete, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -31,7 +31,7 @@ func (g *Group) DELETE(path string, handler handlerFunc, middlewares ...Middlewa
 	}
 }
 
-func (g *Group) GET(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Get(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodGet, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -39,7 +39,7 @@ func (g *Group) GET(path string, handler handlerFunc, middlewares ...MiddlewareF
 	}
 }
 
-func (g *Group) HEAD(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Head(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodHead, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -47,7 +47,7 @@ func (g *Group) HEAD(path string, handler handlerFunc, middlewares ...Middleware
 	}
 }
 
-func (g *Group) OPTIONS(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Options(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodOptions, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -55,7 +55,7 @@ func (g *Group) OPTIONS(path string, handler handlerFunc, middlewares ...Middlew
 	}
 }
 
-func (g *Group) PATCH(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Patch(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodPatch, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -63,7 +63,7 @@ func (g *Group) PATCH(path string, handler handlerFunc, middlewares ...Middlewar
 	}
 }
 
-func (g *Group) POST(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Post(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodPost, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -71,7 +71,7 @@ func (g *Group) POST(path string, handler handlerFunc, middlewares ...Middleware
 	}
 }
 
-func (g *Group) PUT(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Put(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodPut, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
@@ -79,7 +79,7 @@ func (g *Group) PUT(path string, handler handlerFunc, middlewares ...MiddlewareF
 	}
 }
 
-func (g *Group) TRACE(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) Trace(path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
 		Route: g.group.Add(http.MethodTrace, path, func(ctx echo.Context) error {
 			return handler(ctx.(*Context))
