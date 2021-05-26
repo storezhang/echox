@@ -93,7 +93,7 @@ func Start(opts ...option) (err error) {
 		}
 	})
 
-	// 在另外的协程中启动服务器，支持Graceful Shutdown
+	// 在另外的协程中启动服务器，实现优雅地关闭（Graceful Shutdown）
 	go func() {
 		err = server.Start(options.addr)
 	}()
