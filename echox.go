@@ -78,7 +78,7 @@ func StartWith(ec *EchoConfig) {
 	// 初始化Validator
 	if ec.Validate {
 		// 数据验证
-		e.Validator = validatorx.GetInstance()
+		e.Validator = validatorx.New()
 	}
 
 	// 初始化绑定
