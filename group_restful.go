@@ -25,7 +25,7 @@ func (g *Group) RestfulDelete(path string, handler restfulHandler, middlewares .
 
 func (g *Group) restful(path string, handler restfulHandler, successCode int, failedCode int, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
-		Route: g.group.Add(http.MethodGet, path, func(ctx echo.Context) (err error) {
+		Route: g.proxy.Add(http.MethodGet, path, func(ctx echo.Context) (err error) {
 			var rsp interface{}
 			if rsp, err = handler(ctx.(*Context)); nil != err {
 				return

@@ -31,7 +31,7 @@ func Start(opts ...option) (err error) {
 
 	// 处理路由
 	if 0 != len(options.routes) {
-		group := &Group{group: server.Group(options.context)}
+		group := &Group{proxy: server.Group(options.context)}
 		for _, route := range options.routes {
 			route(group)
 		}
