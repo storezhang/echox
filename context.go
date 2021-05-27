@@ -44,6 +44,15 @@ func (c *Context) JwtToken(domain string, data interface{}, expire time.Duration
 	return c.jwt.Token(domain, data, expire)
 }
 
+func (c *Context) Fill(data interface{}) (err error) {
+	if err = c.Bind(data); nil != err {
+		return
+	}
+	err = c.Validate(data)
+
+	return
+}
+
 func (c *Context) HttpFile(file http.File) (err error) {
 	defer func() {
 		_ = file.Close()
@@ -73,33 +82,34 @@ func (c *Context) contentDisposition(file http.File, name string, dispositionTyp
 	return c.HttpFile(file)
 }
 
-func (c *Context) JSON(code int, i interface{}) (err error) {
+func (c *Context) JSON(code int, data interface{}) error {
 	indent := ""
 	if _, pretty := c.QueryParams()["pretty"]; c.Echo().Debug || pretty {
 		indent = defaultIndent
 	}
-	return c.json(code, i, indent)
+
+	return c.json(code, data, indent)
 }
 
-func (c *Context) JSONPretty(code int, i interface{}, indent string) (err error) {
-	return c.json(code, i, indent)
+func (c *Context) JSONPretty(code int, data interface{}, indent string) (err error) {
+	return c.json(code, data, indent)
 }
 
-func (c *Context) JSONBlob(code int, b []byte) (err error) {
-	return c.Blob(code, echo.MIMEApplicationJSONCharsetUTF8, b)
+func (c *Context) JSONBlob(code int, data []byte) (err error) {
+	return c.Blob(code, echo.MIMEApplicationJSONCharsetUTF8, data)
 }
 
-func (c *Context) JSONP(code int, callback string, i interface{}) (err error) {
-	return c.jsonPBlob(code, callback, i)
+func (c *Context) JSONP(code int, callback string, data interface{}) (err error) {
+	return c.jsonPBlob(code, callback, data)
 }
 
-func (c *Context) JSONPBlob(code int, callback string, b []byte) (err error) {
+func (c *Context) JSONPBlob(code int, callback string, data []byte) (err error) {
 	c.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
 	c.Response().WriteHeader(code)
 	if _, err = c.Response().Write([]byte(callback + "(")); err != nil {
 		return
 	}
-	if _, err = c.Response().Write(b); err != nil {
+	if _, err = c.Response().Write(data); err != nil {
 		return
 	}
 	_, err = c.Response().Write([]byte(");"))
@@ -107,7 +117,7 @@ func (c *Context) JSONPBlob(code int, callback string, b []byte) (err error) {
 	return
 }
 
-func (c *Context) jsonPBlob(code int, callback string, i interface{}) (err error) {
+func (c *Context) jsonPBlob(code int, callback string, data interface{}) (err error) {
 	enc := jsoniter.NewEncoder(c.Response())
 	_, pretty := c.QueryParams()["pretty"]
 	if c.Echo().Debug || pretty {
@@ -118,7 +128,7 @@ func (c *Context) jsonPBlob(code int, callback string, i interface{}) (err error
 	if _, err = c.Response().Write([]byte(callback + "(")); err != nil {
 		return
 	}
-	if err = enc.Encode(i); err != nil {
+	if err = enc.Encode(data); err != nil {
 		return
 	}
 	if _, err = c.Response().Write([]byte(");")); err != nil {
@@ -128,7 +138,7 @@ func (c *Context) jsonPBlob(code int, callback string, i interface{}) (err error
 	return
 }
 
-func (c *Context) json(code int, i interface{}, indent string) error {
+func (c *Context) json(code int, data interface{}, indent string) error {
 	enc := jsoniter.NewEncoder(c.Response())
 	if "" != indent {
 		enc.SetIndent("", indent)
@@ -136,7 +146,7 @@ func (c *Context) json(code int, i interface{}, indent string) error {
 	c.writeContentType(echo.MIMEApplicationJSONCharsetUTF8)
 	c.Response().WriteHeader(code)
 
-	return enc.Encode(i)
+	return enc.Encode(data)
 }
 
 func (c *Context) writeContentType(value string) {
