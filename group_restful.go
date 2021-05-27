@@ -15,7 +15,7 @@ func (g *Group) RestfulGet(path string, handler restfulHandler, middlewares ...M
 	return g.restful(path, handler, http.StatusOK, http.StatusNotFound, middlewares...)
 }
 
-func (g *Group) RestfulUpdate(path string, handler restfulHandler, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) RestfulPut(path string, handler restfulHandler, middlewares ...MiddlewareFunc) *Route {
 	return g.restful(path, handler, http.StatusOK, http.StatusBadRequest, middlewares...)
 }
 

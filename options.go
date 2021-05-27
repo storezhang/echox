@@ -50,6 +50,9 @@ func defaultOptions() *options {
 		error:           errorHandlerFunc,
 		shutdownTimeout: 30 * time.Second,
 		crosEnable:      true,
+		routes: []routeFunc{func(group *Group) {
+			group.Get("/routes", routeHandler)
+		}},
 		cros: crosConfig{
 			origins:     []string{"*"},
 			credentials: true,

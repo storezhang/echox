@@ -13,5 +13,5 @@ func Routes(routes ...routeFunc) *optionRoutes {
 }
 
 func (r *optionRoutes) apply(options *options) {
-	options.routes = r.routes
+	options.routes = append(options.routes, r.routes...)
 }
