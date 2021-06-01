@@ -8,24 +8,24 @@ import (
 )
 
 func (g *Group) RestfulPost(path string, handler restfulHandler, middlewares ...MiddlewareFunc) *Route {
-	return g.restful(path, handler, http.StatusCreated, http.StatusBadRequest, middlewares...)
+	return g.restful(http.MethodPost, path, handler, http.StatusCreated, http.StatusBadRequest, middlewares...)
 }
 
 func (g *Group) RestfulGet(path string, handler restfulHandler, middlewares ...MiddlewareFunc) *Route {
-	return g.restful(path, handler, http.StatusOK, http.StatusNotFound, middlewares...)
+	return g.restful(http.MethodGet, path, handler, http.StatusOK, http.StatusNotFound, middlewares...)
 }
 
 func (g *Group) RestfulPut(path string, handler restfulHandler, middlewares ...MiddlewareFunc) *Route {
-	return g.restful(path, handler, http.StatusOK, http.StatusBadRequest, middlewares...)
+	return g.restful(http.MethodPut, path, handler, http.StatusOK, http.StatusBadRequest, middlewares...)
 }
 
 func (g *Group) RestfulDelete(path string, handler restfulHandler, middlewares ...MiddlewareFunc) *Route {
-	return g.restful(path, handler, http.StatusNoContent, http.StatusBadRequest, middlewares...)
+	return g.restful(http.MethodDelete, path, handler, http.StatusNoContent, http.StatusBadRequest, middlewares...)
 }
 
-func (g *Group) restful(path string, handler restfulHandler, successCode int, failedCode int, middlewares ...MiddlewareFunc) *Route {
+func (g *Group) restful(method string, path string, handler restfulHandler, successCode int, failedCode int, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
-		Route: g.proxy.Add(http.MethodGet, path, func(ctx echo.Context) (err error) {
+		Route: g.proxy.Add(method, path, func(ctx echo.Context) (err error) {
 			var rsp interface{}
 			if rsp, err = handler(ctx.(*Context)); nil != err {
 				return
