@@ -81,16 +81,16 @@ func NewJwtWithConfig(
 	}
 }
 
-func (jc *Jwt) Subject(ctx *Context, subject interface{}) (err error) {
+func (j *Jwt) Subject(ctx *Context, subject interface{}) (err error) {
 	var (
 		token  string
 		claims jwt.Claims
 	)
 
-	if token, err = jc.runExtractor(ctx); nil != err {
+	if token, err = j.runExtractor(ctx); nil != err {
 		return
 	}
-	if claims, _, err = jc.Parse(token); nil != err {
+	if claims, _, err = j.Parse(token); nil != err {
 		return
 	}
 	// 从Token中反序列化主题数据
@@ -99,8 +99,8 @@ func (jc *Jwt) Subject(ctx *Context, subject interface{}) (err error) {
 	return
 }
 
-func (jc *Jwt) runExtractor(ctx echo.Context) (token string, err error) {
-	for _, extractor := range jc.extractor {
+func (j *Jwt) runExtractor(ctx echo.Context) (token string, err error) {
+	for _, extractor := range j.extractor {
 		if token, err = extractor(ctx); nil == err || "" != token {
 			break
 		}
@@ -109,14 +109,14 @@ func (jc *Jwt) runExtractor(ctx echo.Context) (token string, err error) {
 	return
 }
 
-func (jc *Jwt) Parse(token string) (claims jwt.Claims, header map[string]interface{}, err error) {
+func (j *Jwt) Parse(token string) (claims jwt.Claims, header map[string]interface{}, err error) {
 	jwtToken := new(jwt.Token)
-	if _, ok := jc.claims.(jwt.MapClaims); ok {
-		jwtToken, err = jwt.Parse(token, jc.keyFunc)
+	if _, ok := j.claims.(jwt.MapClaims); ok {
+		jwtToken, err = jwt.Parse(token, j.keyFunc)
 	} else {
-		elem := reflect.ValueOf(jc.claims).Type().Elem()
+		elem := reflect.ValueOf(j.claims).Type().Elem()
 		claims := reflect.New(elem).Interface().(jwt.Claims)
-		jwtToken, err = jwt.ParseWithClaims(token, claims, jc.keyFunc)
+		jwtToken, err = jwt.ParseWithClaims(token, claims, j.keyFunc)
 	}
 	if nil == err && jwtToken.Valid {
 		claims = jwtToken.Claims
@@ -126,13 +126,13 @@ func (jc *Jwt) Parse(token string) (claims jwt.Claims, header map[string]interfa
 	return
 }
 
-func (jc *Jwt) MakeToken(claims jwt.Claims) (string, error) {
-	token := jwt.NewWithClaims(jwt.GetSigningMethod(jc.method), claims)
+func (j *Jwt) MakeToken(claims jwt.Claims) (string, error) {
+	token := jwt.NewWithClaims(jwt.GetSigningMethod(j.method), claims)
 
-	return token.SignedString([]byte(jc.key.(string)))
+	return token.SignedString([]byte(j.key.(string)))
 }
 
-func (jc *Jwt) Token(
+func (j *Jwt) Token(
 	domain string,
 	subject interface{},
 	expire time.Duration,
@@ -144,7 +144,7 @@ func (jc *Jwt) Token(
 	}
 
 	id = xid.New().String()
-	token, err = jc.MakeToken(jwt.StandardClaims{
+	token, err = j.MakeToken(jwt.StandardClaims{
 		// 代表这个JWT的签发主体
 		Issuer: domain,
 		// 代表这个JWT的主体，即它的所有人
