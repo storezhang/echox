@@ -17,8 +17,6 @@ type options struct {
 	context string
 	// 初始化方法
 	inits []initFunc
-	// 初始化路由方法
-	routes []routeFunc
 	// 错误处理
 	error errorHandler
 	// 退出超时时间
@@ -30,29 +28,17 @@ type options struct {
 	// 各种中间件
 	// 打印堆栈信息
 	panicStack panicStackConfig
-	// Jwt配置
-	jwtEnable bool
-	jwt       JwtConfig
-	// Http签名验证
-	signatureEnable bool
-	signature       signatureConfig
-	// Casbin权限验证
-	casbinEnable bool
-	casbin       casbinConfig
 }
 
 func defaultOptions() *options {
 	return &options{
-		addr:            ":1323",
+		addr:            ":9000",
 		binder:          true,
 		validate:        true,
 		banner:          false,
 		error:           errorHandlerFunc,
 		shutdownTimeout: 30 * time.Second,
 		crosEnable:      true,
-		routes: []routeFunc{func(group *Group) {
-			group.Get("/routes", routeHandler)
-		}},
 		cros: crosConfig{
 			origins:     []string{"*"},
 			credentials: true,
@@ -62,8 +48,5 @@ func defaultOptions() *options {
 			disableStackAll:   false,
 			disablePrintStack: false,
 		},
-		jwtEnable:       false,
-		signatureEnable: false,
-		casbinEnable:    false,
 	}
 }

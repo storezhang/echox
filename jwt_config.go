@@ -11,8 +11,8 @@ import (
 	`github.com/rs/xid`
 )
 
-// JwtConfig Jwt配置
-type JwtConfig struct {
+// Jwt Jwt配置
+type Jwt struct {
 	// 确定是不是要走中间件
 	skipper middleware.Skipper
 	// 执行前的操作
@@ -47,7 +47,7 @@ type JwtConfig struct {
 }
 
 // NewJwt 创建Jwt配置，快捷方式
-func NewJwt(signingKey string) *JwtConfig {
+func NewJwt(signingKey string) *Jwt {
 	return NewJwtWithConfig(
 		middleware.DefaultSkipper,
 		[]byte(signingKey), AlgorithmHS256,
@@ -67,8 +67,8 @@ func NewJwtWithConfig(
 	scheme string,
 	beforeHandler middleware.BeforeFunc, successHandler jwtSuccessHandler,
 	lookups ...string,
-) *JwtConfig {
-	return &JwtConfig{
+) *Jwt {
+	return &Jwt{
 		skipper:        skipper,
 		beforeHandler:  beforeHandler,
 		successHandler: successHandler,
@@ -81,9 +81,27 @@ func NewJwtWithConfig(
 	}
 }
 
-func (jc *JwtConfig) runExtractor(c echo.Context) (token string, err error) {
+func (jc *Jwt) Subject(ctx *Context, subject interface{}) (err error) {
+	var (
+		token  string
+		claims jwt.Claims
+	)
+
+	if token, err = jc.runExtractor(ctx); nil != err {
+		return
+	}
+	if claims, _, err = jc.Parse(token); nil != err {
+		return
+	}
+	// 从Token中反序列化主题数据
+	err = json.Unmarshal([]byte(claims.(*jwt.StandardClaims).Subject), &subject)
+
+	return
+}
+
+func (jc *Jwt) runExtractor(ctx echo.Context) (token string, err error) {
 	for _, extractor := range jc.extractor {
-		if token, err = extractor(c); nil == err || "" != token {
+		if token, err = extractor(ctx); nil == err || "" != token {
 			break
 		}
 	}
@@ -91,7 +109,7 @@ func (jc *JwtConfig) runExtractor(c echo.Context) (token string, err error) {
 	return
 }
 
-func (jc *JwtConfig) Parse(token string) (claims jwt.Claims, header map[string]interface{}, err error) {
+func (jc *Jwt) Parse(token string) (claims jwt.Claims, header map[string]interface{}, err error) {
 	jwtToken := new(jwt.Token)
 	if _, ok := jc.claims.(jwt.MapClaims); ok {
 		jwtToken, err = jwt.Parse(token, jc.keyFunc)
@@ -108,13 +126,13 @@ func (jc *JwtConfig) Parse(token string) (claims jwt.Claims, header map[string]i
 	return
 }
 
-func (jc *JwtConfig) MakeToken(claims jwt.Claims) (string, error) {
+func (jc *Jwt) MakeToken(claims jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(jc.method), claims)
 
 	return token.SignedString([]byte(jc.key.(string)))
 }
 
-func (jc *JwtConfig) Token(
+func (jc *Jwt) Token(
 	domain string,
 	subject interface{},
 	expire time.Duration,

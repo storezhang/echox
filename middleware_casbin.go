@@ -12,7 +12,8 @@ type roleSource interface {
 	GetsRoleId(user interface{}) (ids []int64, err error)
 }
 
-func casbinFunc(config casbinConfig) echo.MiddlewareFunc {
+// CasbinMiddleware 权限控制中间件
+func CasbinMiddleware(config *Casbin) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) (err error) {
 			if config.skipper(ctx) {

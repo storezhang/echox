@@ -15,9 +15,7 @@ const (
 	AlgorithmHS256 = "HS256"
 )
 
-var (
-	errJWTMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失JWT请求头")
-)
+var errJwtMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失Jwt请求头")
 
 type (
 	// 成功后的处理方法
@@ -25,7 +23,8 @@ type (
 	jwtExtractor      func(echo.Context) (string, error)
 )
 
-func jwtFunc(config JwtConfig) echo.MiddlewareFunc {
+// JwtMiddleware Jwt中间件
+func JwtMiddleware(config Jwt) echo.MiddlewareFunc {
 	config.keyFunc = func(t *jwt.Token) (key interface{}, err error) {
 		if t.Method.Alg() != config.method {
 			err = fmt.Errorf("未知的签名算法=%v", t.Header["alg"])
@@ -103,7 +102,7 @@ func jwtFromHeader(header string, authScheme string) jwtExtractor {
 		if len(auth) > authLength+1 && auth[:authLength] == authScheme {
 			token = auth[authLength+1:]
 		} else {
-			err = errJWTMissing
+			err = errJwtMissing
 		}
 
 		return
@@ -114,7 +113,7 @@ func jwtFromQuery(param string) jwtExtractor {
 	return func(ctx echo.Context) (token string, err error) {
 		token = ctx.QueryParam(param)
 		if "" == token {
-			err = errJWTMissing
+			err = errJwtMissing
 		}
 
 		return
@@ -125,7 +124,7 @@ func jwtFromCookie(name string) jwtExtractor {
 	return func(ctx echo.Context) (token string, err error) {
 		var cookie *http.Cookie
 		if cookie, err = ctx.Cookie(name); nil != err {
-			err = errJWTMissing
+			err = errJwtMissing
 		} else {
 			token = cookie.Value
 		}

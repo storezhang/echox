@@ -1,12 +1,9 @@
 package echox
 
 import (
-	`encoding/json`
 	`net/http`
 	`os`
-	`time`
 
-	`github.com/dgrijalva/jwt-go`
 	`github.com/json-iterator/go`
 	`github.com/labstack/echo/v4`
 	`github.com/storezhang/gox`
@@ -17,31 +14,6 @@ const defaultIndent = "  "
 // Context 自定义的Echo上下文
 type Context struct {
 	echo.Context
-
-	// Jwt配置
-	jwt JwtConfig
-}
-
-func (c *Context) Subject(subject interface{}) (err error) {
-	var (
-		token  string
-		claims jwt.Claims
-	)
-
-	if token, err = c.jwt.runExtractor(c.Context); nil != err {
-		return
-	}
-	if claims, _, err = c.jwt.Parse(token); nil != err {
-		return
-	}
-	// 从Token中反序列化主题数据
-	err = json.Unmarshal([]byte(claims.(*jwt.StandardClaims).Subject), &subject)
-
-	return
-}
-
-func (c *Context) JwtToken(domain string, data interface{}, expire time.Duration) (token string, id string, err error) {
-	return c.jwt.Token(domain, data, expire)
 }
 
 func (c *Context) Fill(data interface{}) (err error) {

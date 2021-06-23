@@ -11,10 +11,14 @@ import (
 	`github.com/storezhang/validatorx`
 )
 
-type initFunc func(echo *echo.Echo)
+// Echo 组织echo.Echo启动
+type Echo struct {
+	*echo.Echo
 
-// Start 启动服务
-func Start(opts ...option) (err error) {
+	options *options
+}
+
+func New(opts ...option) *Echo {
 	options := defaultOptions()
 	for _, opt := range opts {
 		opt.apply(options)
@@ -27,14 +31,6 @@ func Start(opts ...option) (err error) {
 	// 初始化
 	for _, init := range options.inits {
 		init(server)
-	}
-
-	// 处理路由
-	if 0 != len(options.routes) {
-		group := &Group{proxy: server.Group(options.context)}
-		for _, route := range options.routes {
-			route(group)
-		}
 	}
 
 	// 数据验证
@@ -66,19 +62,6 @@ func Start(opts ...option) (err error) {
 		server.Use(middleware.CORSWithConfig(cors))
 	}
 
-	// 增加内置中间件
-	// 增加Jwt
-	if options.jwtEnable {
-		server.Use(jwtFunc(options.jwt))
-	}
-	// 增加Http签名验证
-	if options.signatureEnable {
-		server.Use(signatureFunc(options.signature))
-	}
-	// 增加权限验证
-	if options.casbinEnable {
-		server.Use(casbinFunc(options.casbin))
-	}
 	// 打印堆栈信息
 	// 方便调试，默认处理没有换行，很难内眼查看堆栈信息
 	server.Use(panicStackFunc(options.panicStack))
@@ -88,14 +71,33 @@ func Start(opts ...option) (err error) {
 		return func(c echo.Context) error {
 			return next(&Context{
 				Context: c,
-				jwt:     options.jwt,
 			})
 		}
 	})
 
+	return &Echo{
+		Echo:    server,
+		options: options,
+	}
+}
+
+func (e *Echo) Start(opts ...startOption) (err error) {
+	options := defaultStartOptions()
+	for _, opt := range opts {
+		opt.applyStart(options)
+	}
+
+	// 处理路由
+	if 0 != len(options.routes) {
+		group := &Group{proxy: e.Group(e.options.context)}
+		for _, route := range options.routes {
+			route(group)
+		}
+	}
+
 	// 在另外的协程中启动服务器，实现优雅地关闭（Graceful Shutdown）
 	go func() {
-		err = server.Start(options.addr)
+		err = e.Echo.Start(e.options.addr)
 	}()
 
 	// 等待系统退出中断并响应
@@ -104,7 +106,7 @@ func Start(opts ...option) (err error) {
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), options.shutdownTimeout)
 	defer cancel()
-	err = server.Shutdown(ctx)
+	err = e.Shutdown(ctx)
 
 	return
 }

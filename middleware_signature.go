@@ -14,7 +14,8 @@ type keySource interface {
 	Key(id string) (key string, err error)
 }
 
-func signatureFunc(config signatureConfig) echo.MiddlewareFunc {
+// SignatureMiddleware 签名中间件
+func SignatureMiddleware(config Signature) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) (err error) {
 			if config.skipper(ctx) {
