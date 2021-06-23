@@ -58,7 +58,7 @@ func (c *Casbin) checkPermission(ctx echo.Context) (pass bool, err error) {
 		roleIds []int64
 	)
 
-	if err = c.jwt.Subject(ctx, user); nil != err {
+	if err = c.jwt.Subject(&Context{Context: ctx}, user); nil != err {
 		return
 	}
 
