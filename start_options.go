@@ -15,7 +15,7 @@ func defaultStartOptions() *startOptions {
 	return &startOptions{
 		shutdownTimeout: 30 * time.Second,
 		routes: []routeFunc{func(group *Group) {
-			group.Get("/routes", routeHandler)
+			group.Get("/routes", routeHandler).Name = "所有路由信息"
 		}},
 	}
 }
