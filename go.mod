@@ -7,7 +7,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-playground/validator/v10 v10.6.1
-	github.com/json-iterator/go v1.1.11
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mcuadros/go-defaults v1.2.0

@@ -4,7 +4,6 @@ import (
 	`net/http`
 	`os`
 
-	`github.com/json-iterator/go`
 	`github.com/labstack/echo/v4`
 	`github.com/storezhang/gox`
 )
@@ -52,78 +51,4 @@ func (c *Context) contentDisposition(file http.File, name string, dispositionTyp
 	c.Response().Header().Set(gox.HeaderContentDisposition, gox.ContentDisposition(name, dispositionType))
 
 	return c.HttpFile(file)
-}
-
-func (c *Context) JSON(code int, data interface{}) error {
-	indent := ""
-	if _, pretty := c.QueryParams()["pretty"]; c.Echo().Debug || pretty {
-		indent = defaultIndent
-	}
-
-	return c.json(code, data, indent)
-}
-
-func (c *Context) JSONPretty(code int, data interface{}, indent string) (err error) {
-	return c.json(code, data, indent)
-}
-
-func (c *Context) JSONBlob(code int, data []byte) (err error) {
-	return c.Blob(code, echo.MIMEApplicationJSONCharsetUTF8, data)
-}
-
-func (c *Context) JSONP(code int, callback string, data interface{}) (err error) {
-	return c.jsonPBlob(code, callback, data)
-}
-
-func (c *Context) JSONPBlob(code int, callback string, data []byte) (err error) {
-	c.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
-	c.Response().WriteHeader(code)
-	if _, err = c.Response().Write([]byte(callback + "(")); err != nil {
-		return
-	}
-	if _, err = c.Response().Write(data); err != nil {
-		return
-	}
-	_, err = c.Response().Write([]byte(");"))
-
-	return
-}
-
-func (c *Context) jsonPBlob(code int, callback string, data interface{}) (err error) {
-	enc := jsoniter.NewEncoder(c.Response())
-	_, pretty := c.QueryParams()["pretty"]
-	if c.Echo().Debug || pretty {
-		enc.SetIndent("", "  ")
-	}
-	c.writeContentType(echo.MIMEApplicationJavaScriptCharsetUTF8)
-	c.Response().WriteHeader(code)
-	if _, err = c.Response().Write([]byte(callback + "(")); err != nil {
-		return
-	}
-	if err = enc.Encode(data); err != nil {
-		return
-	}
-	if _, err = c.Response().Write([]byte(");")); err != nil {
-		return
-	}
-
-	return
-}
-
-func (c *Context) json(code int, data interface{}, indent string) error {
-	enc := jsoniter.NewEncoder(c.Response())
-	if "" != indent {
-		enc.SetIndent("", indent)
-	}
-	c.writeContentType(echo.MIMEApplicationJSONCharsetUTF8)
-	c.Response().WriteHeader(code)
-
-	return enc.Encode(data)
-}
-
-func (c *Context) writeContentType(value string) {
-	header := c.Response().Header()
-	if "" == header.Get(echo.HeaderContentType) {
-		header.Set(echo.HeaderContentType, value)
-	}
 }
