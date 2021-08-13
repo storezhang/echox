@@ -19,7 +19,7 @@ type Echo struct {
 }
 
 func New(opts ...option) *Echo {
-	options := defaultOptions()
+	options := defaultOptions
 	for _, opt := range opts {
 		opt.apply(options)
 	}
@@ -96,9 +96,33 @@ func (e *Echo) Start(opts ...startOption) (err error) {
 	}
 
 	// 在另外的协程中启动服务器，实现优雅地关闭（Graceful Shutdown）
-	go func() {
+	if options.graceful {
+		go func() {
+			err = e.graceful(options)
+		}()
+	} else {
 		err = e.Echo.Start(e.options.addr)
-	}()
+	}
+
+	return
+}
+
+func (e *Echo) Stop(opts ...stopOption) error {
+	options := defaultStopOptions()
+	for _, opt := range opts {
+		opt.applyStop(options)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), options.timeout)
+	defer cancel()
+
+	return e.Echo.Shutdown(ctx)
+}
+
+func (e *Echo) graceful(options *startOptions) (err error) {
+	if err = e.Echo.Start(e.options.addr); nil != err {
+		return
+	}
 
 	// 等待系统退出中断并响应
 	quit := make(chan os.Signal)
@@ -106,7 +130,7 @@ func (e *Echo) Start(opts ...startOption) (err error) {
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), options.shutdownTimeout)
 	defer cancel()
-	err = e.Shutdown(ctx)
+	err = e.Echo.Shutdown(ctx)
 
 	return
 }

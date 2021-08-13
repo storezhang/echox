@@ -5,14 +5,18 @@ import (
 )
 
 type startOptions struct {
-	// 退出超时时间
+	*options
+
+	graceful        bool
 	shutdownTimeout time.Duration
-	// 初始化路由方法
-	routes []routeFunc
+	routes          []routeFunc
 }
 
 func defaultStartOptions() *startOptions {
 	return &startOptions{
+		options: defaultOptions,
+
+		graceful:        false,
 		shutdownTimeout: 30 * time.Second,
 		routes: []routeFunc{func(group *Group) {
 			group.Get("/routes", routeHandler).Name = "所有路由信息"

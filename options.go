@@ -1,8 +1,22 @@
 package echox
 
-import (
-	`time`
-)
+var defaultOptions = &options{
+	addr:       ":9000",
+	binder:     true,
+	validate:   true,
+	banner:     false,
+	error:      errorHandlerFunc,
+	crosEnable: true,
+	cros: crosConfig{
+		origins:     []string{"*"},
+		credentials: true,
+	},
+	panicStack: panicStackConfig{
+		size:              4 << 10,
+		disableStackAll:   false,
+		disablePrintStack: false,
+	},
+}
 
 type options struct {
 	// 地址
@@ -19,8 +33,7 @@ type options struct {
 	inits []initFunc
 	// 错误处理
 	error errorHandler
-	// 退出超时时间
-	shutdownTimeout time.Duration
+
 	// 跨域
 	crosEnable bool
 	cros       crosConfig
@@ -28,25 +41,4 @@ type options struct {
 	// 各种中间件
 	// 打印堆栈信息
 	panicStack panicStackConfig
-}
-
-func defaultOptions() *options {
-	return &options{
-		addr:            ":9000",
-		binder:          true,
-		validate:        true,
-		banner:          false,
-		error:           errorHandlerFunc,
-		shutdownTimeout: 30 * time.Second,
-		crosEnable:      true,
-		cros: crosConfig{
-			origins:     []string{"*"},
-			credentials: true,
-		},
-		panicStack: panicStackConfig{
-			size:              4 << 10,
-			disableStackAll:   false,
-			disablePrintStack: false,
-		},
-	}
 }
