@@ -107,7 +107,7 @@ func (e *Echo) Start(opts ...startOption) (err error) {
 	return
 }
 
-func (e *Echo) Stop(opts ...stopOption) error {
+func (e *Echo) Shutdown(opts ...stopOption) error {
 	options := defaultStopOptions()
 	for _, opt := range opts {
 		opt.applyStop(options)
