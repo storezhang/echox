@@ -50,7 +50,7 @@ type Jwt struct {
 func NewJwt(signingKey string) *Jwt {
 	return NewJwtWithConfig(
 		middleware.DefaultSkipper,
-		[]byte(signingKey), AlgorithmHS256,
+		signingKey, AlgorithmHS256,
 		"user", &jwt.StandardClaims{},
 		"Bearer",
 		nil, nil,
