@@ -13,9 +13,9 @@ type roleSource interface {
 }
 
 // CasbinMiddleware 权限控制中间件
-func CasbinMiddleware(config *Casbin) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(ctx echo.Context) (err error) {
+func CasbinMiddleware(config *Casbin) MiddlewareFunc {
+	return func(next handlerFunc) handlerFunc {
+		return func(ctx *Context) (err error) {
 			if config.skipper(ctx) {
 				err = next(ctx)
 

@@ -10,10 +10,8 @@ import (
 	`github.com/labstack/echo/v4`
 )
 
-const (
-	// AlgorithmHS256 HS256加密算法
-	AlgorithmHS256 = "HS256"
-)
+// AlgorithmHS256 HS256加密算法
+const AlgorithmHS256 = "HS256"
 
 var errJwtMissing = echo.NewHTTPError(http.StatusUnauthorized, "缺失Jwt请求头")
 
@@ -24,7 +22,7 @@ type (
 )
 
 // JwtMiddleware Jwt中间件
-func JwtMiddleware(config Jwt) echo.MiddlewareFunc {
+func JwtMiddleware(config Jwt) MiddlewareFunc {
 	config.keyFunc = func(t *jwt.Token) (key interface{}, err error) {
 		if t.Method.Alg() != config.method {
 			err = fmt.Errorf("未知的签名算法=%v", t.Header["alg"])
@@ -47,8 +45,8 @@ func JwtMiddleware(config Jwt) echo.MiddlewareFunc {
 		}
 	}
 
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(ctx echo.Context) (err error) {
+	return func(next handlerFunc) handlerFunc {
+		return func(ctx *Context) (err error) {
 			if config.skipper(ctx) {
 				err = next(ctx)
 

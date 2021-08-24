@@ -15,9 +15,9 @@ type keySource interface {
 }
 
 // SignatureMiddleware 签名中间件
-func SignatureMiddleware(config Signature) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(ctx echo.Context) (err error) {
+func SignatureMiddleware(config Signature) MiddlewareFunc {
+	return func(next handlerFunc) handlerFunc {
+		return func(ctx *Context) (err error) {
 			if config.skipper(ctx) {
 				err = next(ctx)
 
