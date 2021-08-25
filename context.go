@@ -9,11 +9,19 @@ import (
 	`github.com/storezhang/gox`
 )
 
-const defaultIndent = "  "
-
 // Context 自定义的Echo上下文
 type Context struct {
 	echo.Context
+}
+
+func parseContext(ctx echo.Context) (context *Context) {
+	if _ctx, ok := ctx.(*Context); ok {
+		context = _ctx
+	} else {
+		context = &Context{Context: ctx}
+	}
+
+	return
 }
 
 func (c *Context) Fill(data interface{}) (err error) {

@@ -86,14 +86,8 @@ func (g *Group) File(path string, file string) {
 
 func (g *Group) Add(method string, path string, handler handlerFunc, middlewares ...MiddlewareFunc) *Route {
 	return &Route{
-		Route: g.proxy.Add(method, path, func(ctx echo.Context) (err error) {
-			if _ctx, ok := ctx.(*Context); ok {
-				err = handler(_ctx)
-			} else {
-				err = handler(&Context{Context: ctx})
-			}
-
-			return
+		Route: g.proxy.Add(method, path, func(ctx echo.Context) error {
+			return handler(parseContext(ctx))
 		}, parseMiddlewares(middlewares...)...),
 	}
 }

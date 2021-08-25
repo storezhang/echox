@@ -21,7 +21,7 @@ func parseMiddlewares(middlewares ...MiddlewareFunc) (ems []echo.MiddlewareFunc)
 			})
 
 			return func(ctx echo.Context) error {
-				return handler(ctx.(*Context))
+				return handler(parseContext(ctx))
 			}
 		})
 	}
