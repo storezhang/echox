@@ -43,7 +43,7 @@ func (g *Group) restful(method string, path string, handler restfulHandler, succ
 	return &Route{
 		Route: g.proxy.Add(method, path, func(ctx echo.Context) (err error) {
 			var rsp interface{}
-			if rsp, err = handler(ctx.(*Context)); nil != err {
+			if rsp, err = handler(parseContext(ctx)); nil != err {
 				return
 			}
 
