@@ -48,7 +48,7 @@ func (c *Context) HttpInline(file http.File, name string) error {
 	return c.contentDisposition(file, name, gox.ContentDispositionTypeInline)
 }
 
-func (c *Context) RequestBodyString() (body string, err error) {
+func (c *Context) BodyString() (body string, err error) {
 	buf := new(bytes.Buffer)
 	if _, err = buf.ReadFrom(c.Request().Body); nil != err {
 		return
@@ -58,7 +58,7 @@ func (c *Context) RequestBodyString() (body string, err error) {
 	return
 }
 
-func (c *Context) RequestBodyBytes() (body []byte, err error) {
+func (c *Context) BodyBytes() (body []byte, err error) {
 	buf := new(bytes.Buffer)
 	if _, err = buf.ReadFrom(c.Request().Body); nil != err {
 		return
