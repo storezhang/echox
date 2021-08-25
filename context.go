@@ -1,6 +1,7 @@
 package echox
 
 import (
+	`bytes`
 	`net/http`
 	`os`
 
@@ -45,6 +46,26 @@ func (c *Context) HttpAttachment(file http.File, name string) error {
 
 func (c *Context) HttpInline(file http.File, name string) error {
 	return c.contentDisposition(file, name, gox.ContentDispositionTypeInline)
+}
+
+func (c *Context) RequestBodyString() (body string, err error) {
+	buf := new(bytes.Buffer)
+	if _, err = buf.ReadFrom(c.Request().Body); nil != err {
+		return
+	}
+	body = buf.String()
+
+	return
+}
+
+func (c *Context) RequestBodyBytes() (body []byte, err error) {
+	buf := new(bytes.Buffer)
+	if _, err = buf.ReadFrom(c.Request().Body); nil != err {
+		return
+	}
+	body = buf.Bytes()
+
+	return
 }
 
 func (c *Context) contentDisposition(file http.File, name string, dispositionType gox.ContentDispositionType) error {
