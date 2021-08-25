@@ -22,7 +22,7 @@ type (
 )
 
 // JwtMiddleware Jwt中间件
-func JwtMiddleware(config Jwt) MiddlewareFunc {
+func JwtMiddleware(config *Jwt) MiddlewareFunc {
 	config.keyFunc = func(t *jwt.Token) (key interface{}, err error) {
 		if t.Method.Alg() != config.method {
 			err = fmt.Errorf("未知的签名算法=%v", t.Header["alg"])
