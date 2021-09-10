@@ -40,7 +40,7 @@ func data(ctx echo.Context, rsp interface{}, options *httpOptions) (err error) {
 
 	// 写入数据
 	ctx.Response().Header().Set(echo.HeaderContentType, contentType)
-	ctx.Response().Status = options.code
+	// ctx.Response().Status = options.code
 	ctx.Response().WriteHeader(options.code)
 	_, err = ctx.Response().Write(blob)
 
