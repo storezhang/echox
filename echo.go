@@ -119,6 +119,10 @@ func (e *Echo) Shutdown(opts ...stopOption) error {
 	return e.Echo.Shutdown(ctx)
 }
 
+func (e *Echo) Domain() string {
+	return e.options.domain
+}
+
 func (e *Echo) graceful(options *startOptions) (err error) {
 	if err = e.Echo.Start(e.options.addr); nil != err {
 		return
