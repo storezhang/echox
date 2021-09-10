@@ -19,32 +19,32 @@ type Echo struct {
 }
 
 func New(opts ...option) *Echo {
-	options := defaultOptions
+	_options := defaultOptions
 	for _, opt := range opts {
-		opt.apply(options)
+		opt.apply(_options)
 	}
 
 	// 创建Echo服务器
 	server := echo.New()
-	server.HideBanner = !options.banner
+	server.HideBanner = !_options.banner
 
 	// 初始化
-	for _, init := range options.inits {
+	for _, init := range _options.inits {
 		init(server)
 	}
 
 	// 数据验证
-	if options.validate {
+	if _options.validate {
 		server.Validator = &validate{validate: validatorx.New()}
 	}
 
 	// 初始化绑定
-	if options.binder {
-		server.Binder = &binder{}
+	if nil != _options.binder {
+		server.Binder = _options.binder
 	}
 
 	// 处理错误
-	server.HTTPErrorHandler = echo.HTTPErrorHandler(options.error)
+	server.HTTPErrorHandler = echo.HTTPErrorHandler(_options.error)
 
 	// 初始化中间件
 	server.Pre(middleware.MethodOverride())
@@ -54,30 +54,30 @@ func New(opts ...option) *Echo {
 	server.Use(middleware.Logger())
 	server.Use(middleware.RequestID())
 	// 配置跨域
-	if options.crosEnable {
+	if _options.crosEnable {
 		cors := middleware.DefaultCORSConfig
 		cors.AllowMethods = append(cors.AllowMethods, string(gox.HttpMethodOptions))
-		cors.AllowOrigins = options.cros.origins
-		cors.AllowCredentials = options.cros.credentials
+		cors.AllowOrigins = _options.cros.origins
+		cors.AllowCredentials = _options.cros.credentials
 		server.Use(middleware.CORSWithConfig(cors))
 	}
 
 	// 打印堆栈信息
 	// 方便调试，默认处理没有换行，很难内眼查看堆栈信息
-	server.Use(panicStackFunc(options.panicStack))
+	server.Use(panicStackFunc(_options.panicStack))
 
 	// 增加自定义上下文
 	server.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
+		return func(ctx echo.Context) error {
 			return next(&Context{
-				Context: c,
+				Context: ctx,
 			})
 		}
 	})
 
 	return &Echo{
 		Echo:    server,
-		options: options,
+		options: _options,
 	}
 }
 

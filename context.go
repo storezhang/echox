@@ -4,6 +4,7 @@ import (
 	`bytes`
 	`net/http`
 	`os`
+	`strconv`
 
 	`github.com/labstack/echo/v4`
 	`github.com/storezhang/gox`
@@ -24,6 +25,23 @@ func parseContext(ctx echo.Context) (context *Context) {
 	return
 }
 
+func (c *Context) IntParam(name string) (int, error) {
+	return strconv.Atoi(c.Param(name))
+}
+
+func (c *Context) Int64Param(name string) (int64, error) {
+	return strconv.ParseInt(c.Param(name), 10, 64)
+}
+
+func (c *Context) Data(rsp interface{}, opts ...httpOption) error {
+	_options := defaultHttpOptions()
+	for _, opt := range opts {
+		opt.applyHttp(_options)
+	}
+
+	return data(c.Context, rsp, _options)
+}
+
 func (c *Context) Fill(data interface{}) (err error) {
 	if err = c.Bind(data); nil != err {
 		return
@@ -42,7 +60,6 @@ func (c *Context) HttpFile(file http.File) (err error) {
 	if info, err = file.Stat(); nil != err {
 		return
 	}
-
 	http.ServeContent(c.Response(), c.Request(), info.Name(), info.ModTime(), file)
 
 	return
