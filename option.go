@@ -3,9 +3,10 @@ package echox
 var defaultOptions = &options{
 	addr: ":9000",
 	binder: &binder{
-		tagParam: "param",
-		tagQuery: "query",
-		tagForm:  "form",
+		tagParam:  "param",
+		tagQuery:  "query",
+		tagForm:   "form",
+		tagHeader: "header",
 	},
 	validate:   true,
 	banner:     false,

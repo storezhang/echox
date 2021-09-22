@@ -6,15 +6,17 @@ type optionBinder struct {
 	param   string
 	query   string
 	form    string
+	header  string
 	disable bool
 }
 
 // Binder 配置数据绑定
-func Binder(param string, query string, form string) *optionBinder {
+func Binder(param string, query string, form string, header string) *optionBinder {
 	return &optionBinder{
-		param: param,
-		query: query,
-		form:  form,
+		param:  param,
+		query:  query,
+		form:   form,
+		header: header,
 	}
 }
 
@@ -32,5 +34,6 @@ func (b *optionBinder) apply(options *options) {
 		options.binder.tagParam = b.param
 		options.binder.tagQuery = b.query
 		options.binder.tagForm = b.form
+		options.binder.tagHeader = b.header
 	}
 }

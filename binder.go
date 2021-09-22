@@ -18,13 +18,17 @@ import (
 )
 
 type binder struct {
-	tagParam string
-	tagQuery string
-	tagForm  string
+	tagParam  string
+	tagQuery  string
+	tagForm   string
+	tagHeader string
 }
 
 func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
 	if err = b.params(ctx, value); nil != err {
+		return
+	}
+	if err = b.headers(ctx, value); nil != err {
 		return
 	}
 
@@ -71,6 +75,14 @@ func (b *binder) queries(ctx echo.Context, value interface{}) (err error) {
 	return
 }
 
+func (b *binder) headers(ctx echo.Context, i interface{}) (err error) {
+	if err = b.bindData(i, ctx.Request().Header, b.tagHeader); nil != err {
+		err = echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetInternal(err)
+	}
+
+	return
+}
+
 func (b *binder) body(ctx echo.Context, value interface{}) (err error) {
 	req := ctx.Request()
 	if req.ContentLength == 0 {
@@ -105,10 +117,9 @@ func (b *binder) body(ctx echo.Context, value interface{}) (err error) {
 }
 
 func (b *binder) bindData(destination interface{}, data map[string][]string, tag string) (err error) {
-	if destination == nil || len(data) == 0 {
+	if nil == destination || 0 == len(data) {
 		return
 	}
-
 	typ := reflect.TypeOf(destination).Elem()
 	val := reflect.ValueOf(destination).Elem()
 
@@ -121,8 +132,9 @@ func (b *binder) bindData(destination interface{}, data map[string][]string, tag
 	}
 
 	if typ.Kind() != reflect.Struct {
-		if tag == b.tagParam || tag == b.tagQuery {
-			return
+		if tag == b.tagParam || tag == b.tagQuery || tag == b.tagHeader {
+			// incompatible type, data is probably to be found in the body
+			return nil
 		}
 		return errors.New("binding element must be a struct")
 	}
@@ -149,7 +161,7 @@ func (b *binder) bindData(destination interface{}, data map[string][]string, tag
 			// If tag is nil, we inspect if the field is a not BindUnmarshaler struct and try to bind data into it (might contains fields with tags).
 			// structs that implement BindUnmarshaler are binded only when they have explicit tag
 			if _, ok := structField.Addr().Interface().(echo.BindUnmarshaler); !ok && structFieldKind == reflect.Struct {
-				if err := b.bindData(structField.Addr().Interface(), data, tag); nil != err {
+				if err := b.bindData(structField.Addr().Interface(), data, tag); err != nil {
 					return err
 				}
 			}
@@ -178,7 +190,7 @@ func (b *binder) bindData(destination interface{}, data map[string][]string, tag
 
 		// Call this first, in case we're dealing with an alias to an array type
 		if ok, err := unmarshalField(typeField.Type.Kind(), inputValue[0], structField); ok {
-			if nil != err {
+			if err != nil {
 				return err
 			}
 			continue
@@ -189,12 +201,12 @@ func (b *binder) bindData(destination interface{}, data map[string][]string, tag
 			sliceOf := structField.Type().Elem().Kind()
 			slice := reflect.MakeSlice(structField.Type(), numElems, numElems)
 			for j := 0; j < numElems; j++ {
-				if err := setWithProperType(sliceOf, inputValue[j], slice.Index(j)); nil != err {
+				if err := setWithProperType(sliceOf, inputValue[j], slice.Index(j)); err != nil {
 					return err
 				}
 			}
 			val.Field(i).Set(slice)
-		} else if err := setWithProperType(typeField.Type.Kind(), inputValue[0], structField); nil != err {
+		} else if err := setWithProperType(typeField.Type.Kind(), inputValue[0], structField); err != nil {
 			return err
 
 		}
