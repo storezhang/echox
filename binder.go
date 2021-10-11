@@ -25,6 +25,9 @@ type binder struct {
 }
 
 func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
+	// 处理默认值
+	defer b.setDefaults(value)
+
 	if err = b.params(ctx, value); nil != err {
 		return
 	}
@@ -45,12 +48,6 @@ func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
 	}
 	if err = b.body(ctx, contentType, value); nil != err {
 		return
-	}
-
-	if reflect.Ptr == reflect.ValueOf(value).Kind() {
-		defaults.SetDefaults(value)
-	} else {
-		defaults.SetDefaults(&value)
 	}
 
 	return
@@ -213,6 +210,15 @@ func (b *binder) bindData(destination interface{}, data map[string][]string, tag
 		}
 	}
 	return nil
+}
+
+func (b *binder) setDefaults(value interface{}) {
+	// 区分指针类型和非指针类型
+	if reflect.Ptr == reflect.ValueOf(value).Kind() {
+		defaults.SetDefaults(value)
+	} else {
+		defaults.SetDefaults(&value)
+	}
 }
 
 func setWithProperType(valueKind reflect.Kind, val string, structField reflect.Value) (err error) {
