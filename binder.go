@@ -37,12 +37,16 @@ func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
 			return
 		}
 	}
-	if err = b.body(ctx, value); nil != err {
+
+	// 只有在Content-Type设置值后才绑定Body
+	contentType := ctx.Request().Header.Get(HeaderContentType)
+	if "" == contentType {
+		return
+	}
+	if err = b.body(ctx, contentType, value); nil != err {
 		return
 	}
 
-	// 处理默认值
-	// 区分指针类型和非指针类型
 	if reflect.Ptr == reflect.ValueOf(value).Kind() {
 		defaults.SetDefaults(value)
 	} else {
@@ -83,13 +87,12 @@ func (b *binder) headers(ctx echo.Context, i interface{}) (err error) {
 	return
 }
 
-func (b *binder) body(ctx echo.Context, value interface{}) (err error) {
+func (b *binder) body(ctx echo.Context, contentType string, value interface{}) (err error) {
 	req := ctx.Request()
 	if req.ContentLength == 0 {
 		return
 	}
 
-	contentType := req.Header.Get(HeaderContentType)
 	switch {
 	case strings.HasPrefix(contentType, MIMEApplicationJSON):
 		err = json.NewDecoder(req.Body).Decode(value)
@@ -109,8 +112,6 @@ func (b *binder) body(ctx echo.Context, value interface{}) (err error) {
 			return
 		}
 		err = b.bindData(value, params, b.tagForm)
-	default:
-		err = echo.ErrUnsupportedMediaType
 	}
 
 	return
