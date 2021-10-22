@@ -82,23 +82,23 @@ func New(opts ...option) *Echo {
 }
 
 func (e *Echo) Start(opts ...startOption) (err error) {
-	options := defaultStartOptions()
+	_options := defaultStartOptions()
 	for _, opt := range opts {
-		opt.applyStart(options)
+		opt.applyStart(_options)
 	}
 
 	// 处理路由
-	if 0 != len(options.routes) {
+	if 0 != len(_options.routes) {
 		group := &Group{proxy: e.Group(e.options.context)}
-		for _, route := range options.routes {
+		for _, route := range _options.routes {
 			route(group)
 		}
 	}
 
 	// 在另外的协程中启动服务器，实现优雅地关闭（Graceful Shutdown）
-	if options.graceful {
+	if _options.graceful {
 		go func() {
-			err = e.graceful(options)
+			err = e.graceful(_options)
 		}()
 	} else {
 		err = e.Echo.Start(e.options.addr)
@@ -108,12 +108,12 @@ func (e *Echo) Start(opts ...startOption) (err error) {
 }
 
 func (e *Echo) Shutdown(opts ...stopOption) error {
-	options := defaultStopOptions()
+	_options := defaultStopOptions()
 	for _, opt := range opts {
-		opt.applyStop(options)
+		opt.applyStop(_options)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), options.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), _options.timeout)
 	defer cancel()
 
 	return e.Echo.Shutdown(ctx)

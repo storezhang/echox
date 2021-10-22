@@ -109,9 +109,43 @@ func (b *binder) body(ctx echo.Context, contentType string, value interface{}) (
 			return
 		}
 		err = b.bindData(value, params, b.tagForm)
+	case strings.HasPrefix(contentType, MIMEOctetStream):
+		buf := new(bytes.Buffer)
+		if _, err = buf.ReadFrom(req.Body); nil != err {
+			return
+		}
+		b.bindBytes(value, buf.Bytes())
 	}
 
 	return
+}
+
+func (b *binder) bindBytes(destination interface{}, bytes []byte) {
+	typ := reflect.TypeOf(destination).Elem()
+	val := reflect.ValueOf(destination).Elem()
+	for index := 0; index < typ.NumField(); index++ {
+		typeField := typ.Field(index)
+		structField := val.Field(index)
+		// 检查字段必须是[]byte
+		if !structField.CanSet() || reflect.Slice != typeField.Type.Kind() || reflect.Uint8 != structField.Type().Elem().Kind() {
+			continue
+		}
+
+		slice := reflect.MakeSlice(structField.Type(), len(bytes), len(bytes))
+		reflect.Copy(slice, reflect.ValueOf(bytes))
+		val.Field(index).Set(slice)
+	}
+
+	return
+}
+
+func (b *binder) setDefaults(value interface{}) {
+	// 区分指针类型和非指针类型
+	if reflect.Ptr == reflect.ValueOf(value).Kind() {
+		defaults.SetDefaults(value)
+	} else {
+		defaults.SetDefaults(&value)
+	}
 }
 
 func (b *binder) bindData(destination interface{}, data map[string][]string, tag string) (err error) {
@@ -210,15 +244,6 @@ func (b *binder) bindData(destination interface{}, data map[string][]string, tag
 		}
 	}
 	return nil
-}
-
-func (b *binder) setDefaults(value interface{}) {
-	// 区分指针类型和非指针类型
-	if reflect.Ptr == reflect.ValueOf(value).Kind() {
-		defaults.SetDefaults(value)
-	} else {
-		defaults.SetDefaults(&value)
-	}
 }
 
 func setWithProperType(valueKind reflect.Kind, val string, structField reflect.Value) (err error) {
