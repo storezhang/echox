@@ -15,16 +15,6 @@ type Context struct {
 	echo.Context
 }
 
-func parseContext(ctx echo.Context) (context *Context) {
-	if _ctx, ok := ctx.(*Context); ok {
-		context = _ctx
-	} else {
-		context = &Context{Context: ctx}
-	}
-
-	return
-}
-
 func (c *Context) IntParam(name string) (int, error) {
 	return strconv.Atoi(c.Param(name))
 }
@@ -97,4 +87,14 @@ func (c *Context) contentDisposition(file http.File, name string, dispositionTyp
 	c.Response().Header().Set(gox.HeaderContentDisposition, gox.ContentDisposition(name, dispositionType))
 
 	return c.HttpFile(file)
+}
+
+func parseContext(ctx echo.Context) (context *Context) {
+	if _ctx, ok := ctx.(*Context); ok {
+		context = _ctx
+	} else {
+		context = &Context{Context: ctx}
+	}
+
+	return
 }

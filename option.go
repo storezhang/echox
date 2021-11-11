@@ -31,8 +31,8 @@ type (
 	options struct {
 		// 地址
 		addr string
-		// 域名
-		domain string
+		// 代理
+		proxy string
 		// 是否需要使用绑定功能
 		binder *binder
 		// 是否需要使用数据验证功能

@@ -2,8 +2,10 @@ package echox
 
 import (
 	`context`
+	`fmt`
 	`os`
 	`os/signal`
+	`strings`
 
 	`github.com/labstack/echo/v4`
 	`github.com/labstack/echo/v4/middleware`
@@ -119,8 +121,18 @@ func (e *Echo) Shutdown(opts ...stopOption) error {
 	return e.Echo.Shutdown(ctx)
 }
 
-func (e *Echo) Domain() string {
-	return e.options.domain
+func (e *Echo) Url(api string) (url string) {
+	if strings.HasPrefix(api, `/`) {
+		api = api[1:]
+	}
+
+	if `` != e.options.proxy {
+		url = fmt.Sprintf(`%s/%s`, e.options.proxy, api)
+	} else {
+		url = fmt.Sprintf(`%s/%s`, e.options.addr, api)
+	}
+
+	return
 }
 
 func (e *Echo) graceful(options *startOptions) (err error) {
