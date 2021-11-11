@@ -4,12 +4,12 @@ go 1.16
 
 require (
 	github.com/casbin/casbin/v2 v2.30.5
+	github.com/creasty/defaults v1.5.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/mcuadros/go-defaults v1.2.0
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/rs/xid v1.3.0
 	github.com/storezhang/gox v1.8.1

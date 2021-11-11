@@ -11,8 +11,8 @@ import (
 	`strconv`
 	`strings`
 
+	`github.com/creasty/defaults`
 	`github.com/labstack/echo/v4`
-	`github.com/mcuadros/go-defaults`
 	`github.com/vmihailenco/msgpack/v5`
 	`google.golang.org/protobuf/proto`
 )
@@ -26,7 +26,9 @@ type binder struct {
 
 func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
 	// 处理默认值
-	defer b.setDefaults(value)
+	defer func() {
+		err = defaults.Set(value)
+	}()
 
 	if err = b.params(ctx, value); nil != err {
 		return
@@ -137,15 +139,6 @@ func (b *binder) bindBytes(destination interface{}, bytes []byte) {
 	}
 
 	return
-}
-
-func (b *binder) setDefaults(value interface{}) {
-	// 区分指针类型和非指针类型
-	if reflect.Ptr == reflect.ValueOf(value).Kind() {
-		defaults.SetDefaults(value)
-	} else {
-		defaults.SetDefaults(&value)
-	}
 }
 
 func (b *binder) bindData(destination interface{}, data map[string][]string, tag string) (err error) {
