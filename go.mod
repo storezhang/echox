@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/casbin/casbin/v2 v2.30.5
-	github.com/creasty/defaults v1.5.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-fed/httpsig v1.1.0
 	github.com/go-playground/validator/v10 v10.6.1
@@ -12,8 +11,8 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/rs/xid v1.3.0
-	github.com/storezhang/gox v1.8.1
 	github.com/storezhang/god v0.0.2
+	github.com/storezhang/gox v1.8.1
 	github.com/storezhang/validatorx v1.0.8
 	github.com/vmihailenco/msgpack/v5 v5.3.4
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
