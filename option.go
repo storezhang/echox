@@ -1,19 +1,20 @@
 package echox
 
 var defaultOptions = &options{
-	addr: ":9000",
+	addr: `:9000`,
 	binder: &binder{
-		tagParam:  "param",
-		tagQuery:  "query",
-		tagForm:   "form",
-		tagHeader: "header",
+		tagParam:   `param`,
+		tagQuery:   `query`,
+		tagForm:    `form`,
+		tagHeader:  `header`,
+		tagDefault: `default`,
 	},
 	validate:   true,
 	banner:     false,
 	error:      errorHandlerFunc,
 	crosEnable: true,
 	cros: crosConfig{
-		origins:     []string{"*"},
+		origins:     []string{`*`},
 		credentials: true,
 	},
 	panicStack: panicStackConfig{

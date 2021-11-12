@@ -11,23 +11,24 @@ import (
 	`strconv`
 	`strings`
 
-	`github.com/creasty/defaults`
 	`github.com/labstack/echo/v4`
+	`github.com/storezhang/god`
 	`github.com/vmihailenco/msgpack/v5`
 	`google.golang.org/protobuf/proto`
 )
 
 type binder struct {
-	tagParam  string
-	tagQuery  string
-	tagForm   string
-	tagHeader string
+	tagParam   string
+	tagQuery   string
+	tagForm    string
+	tagHeader  string
+	tagDefault string
 }
 
 func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
 	// 处理默认值
 	defer func() {
-		err = defaults.Set(value)
+		err = god.Set(value, god.Tag(b.tagDefault))
 	}()
 
 	if err = b.params(ctx, value); nil != err {
