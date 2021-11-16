@@ -11,7 +11,9 @@ import (
 	`strconv`
 	`strings`
 
+	`github.com/labstack/echo/v4`
 	`github.com/storezhang/mengpo`
+	`github.com/vmihailenco/msgpack/v5`
 	`google.golang.org/protobuf/proto`
 )
 
