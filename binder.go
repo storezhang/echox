@@ -11,9 +11,7 @@ import (
 	`strconv`
 	`strings`
 
-	`github.com/labstack/echo/v4`
-	`github.com/storezhang/god`
-	`github.com/vmihailenco/msgpack/v5`
+	`github.com/storezhang/mengpo`
 	`google.golang.org/protobuf/proto`
 )
 
@@ -28,7 +26,7 @@ type binder struct {
 func (b *binder) Bind(value interface{}, ctx echo.Context) (err error) {
 	// 处理默认值
 	defer func() {
-		err = god.Set(value, god.Tag(b.tagDefault))
+		err = mengpo.Set(value, mengpo.Tag(b.tagDefault))
 	}()
 
 	if err = b.params(ctx, value); nil != err {

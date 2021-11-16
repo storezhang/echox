@@ -11,8 +11,8 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/rs/xid v1.3.0
-	github.com/storezhang/god v0.0.2
 	github.com/storezhang/gox v1.8.1
+	github.com/storezhang/mengpo v0.0.5
 	github.com/storezhang/validatorx v1.0.8
 	github.com/vmihailenco/msgpack/v5 v5.3.4
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
