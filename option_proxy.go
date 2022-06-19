@@ -1,13 +1,19 @@
 package echox
 
 import (
-	`fmt`
-	`strings`
+	"fmt"
+	"strings"
 
-	`github.com/storezhang/gox`
+	"github.com/goexl/gox"
 )
 
-var _ option = (*optionProxy)(nil)
+var (
+	_ option = (*optionProxy)(nil)
+	_        = Proxy
+	_        = HttpProxy
+	_        = HttpsProxy
+	_        = ProxyAddr
+)
 
 type optionProxy struct {
 	proxy string

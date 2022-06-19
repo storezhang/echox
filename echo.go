@@ -1,16 +1,16 @@
 package echox
 
 import (
-	`context`
-	`fmt`
-	`os`
-	`os/signal`
-	`strings`
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"strings"
 
-	`github.com/labstack/echo/v4`
-	`github.com/labstack/echo/v4/middleware`
-	`github.com/storezhang/gox`
-	`github.com/storezhang/validatorx`
+	"github.com/goexl/gox"
+	"github.com/goexl/xiren"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 // Echo 组织echo.Echo启动
@@ -37,7 +37,7 @@ func New(opts ...option) *Echo {
 
 	// 数据验证
 	if _options.validate {
-		server.Validator = &validate{validate: validatorx.New()}
+		server.Validator = &validate{validate: xiren.New()}
 	}
 
 	// 初始化绑定

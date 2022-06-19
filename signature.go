@@ -1,11 +1,13 @@
 package echox
 
 import (
-	`fmt`
+	"fmt"
 
-	`github.com/labstack/echo/v4/middleware`
-	`github.com/storezhang/gox`
+	"github.com/goexl/gox"
+	"github.com/labstack/echo/v4/middleware"
 )
+
+var _ = NewSignature
 
 // 支持的算法
 var supportAlgorithm = []Algorithm{
