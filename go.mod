@@ -11,7 +11,7 @@ require (
 	github.com/goexl/gox v0.0.6
 	github.com/goexl/mengpo v0.1.7
 	github.com/goexl/xiren v0.0.3
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/rs/xid v1.4.0
 	github.com/vmihailenco/msgpack/v5 v5.3.4
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
