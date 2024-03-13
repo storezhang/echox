@@ -15,7 +15,7 @@ require (
 	github.com/rs/xid v1.4.0
 	github.com/vmihailenco/msgpack/v5 v5.3.4
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.33.0
 )
 
 // replace github.com/goexl/xiren => ../../storezhang/validatorx
